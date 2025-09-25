@@ -2,6 +2,7 @@ import AppBarChart from "@/components/chart-bar";
 import AppAreaChart from "@/components/chart-area-gradient";
 import AppPieChart from "@/components/chart-pie";
 import CardList from "@/components/card-list";
+import TodoList from "@/components/todo-list";
 
 const Home = () => {
     return (
@@ -16,7 +17,9 @@ const Home = () => {
                 <div className='bg-primary-foreground p-4 rounded-lg'>
                     <AppPieChart/>
                 </div>
-                <div className='bg-primary-foreground p-4 rounded-lg'>Test</div>
+                <div className='bg-primary-foreground p-4 rounded-lg'>
+                    <TodoList/>
+                </div>
                 <div className='bg-primary-foreground p-4 rounded-lg lg:col-span-2'>
                     <AppAreaChart/>
                 </div>
