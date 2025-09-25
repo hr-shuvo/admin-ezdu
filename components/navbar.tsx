@@ -13,15 +13,26 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { useTheme } from "next-themes";
+import { useEffect, useState } from "react";
+import { SidebarTrigger } from "@/components/ui/sidebar";
 
 
 const Navbar = () => {
     const {theme, setTheme} = useTheme();
+    const [isClient, setClient] = useState(false);
+
+    useEffect(() => {
+        setClient(true);
+    }, []);
+
+    if (!isClient) {
+        return null;
+    }
 
     return (
 
         <nav className="p-4 flex items-center justify-between">
-            collaps button - {theme}
+            <SidebarTrigger/>
 
             <div className='flex items-center justify-between gap-4'>
                 <Link href="/">Dashboard</Link>
