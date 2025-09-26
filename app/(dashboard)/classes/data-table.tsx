@@ -27,7 +27,7 @@ interface DataTableProps<TData, TValue> {
         pageNumber: number,
         pageSize: number,
         totalPage: number,
-        count: number,
+        totalCount: number,
     },
     onPaginationChange: (pagination: { pageNumber: number, pageSize: number }) => void,
     onSortingChange: (sortBy?: string, sortOrder?: 'asc' | 'desc') => void,
@@ -57,7 +57,7 @@ export function DataTable<TData, TValue>({
         ) {
             setPaginationState({
                 pageIndex: pagination.pageNumber,
-                pageSize: pagination.pageSize,
+                pageSize: pagination.pageSize
             });
         }
     }, [pagination, paginationState.pageIndex, paginationState.pageSize]);
@@ -76,7 +76,6 @@ export function DataTable<TData, TValue>({
     const table = useReactTable({
         data,
         columns,
-        pageCount: pagination?.totalPage,
         getCoreRowModel: getCoreRowModel(),
         getPaginationRowModel: getPaginationRowModel(),
         getSortedRowModel: getSortedRowModel(),
@@ -91,6 +90,10 @@ export function DataTable<TData, TValue>({
         enableRowSelection: true,
         manualPagination: true,
         manualSorting: true,
+        pageCount: pagination?.totalPage,
+        meta: {
+            totalCount: pagination?.totalCount
+        }
     })
 
     return (

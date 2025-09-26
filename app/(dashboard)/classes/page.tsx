@@ -30,7 +30,7 @@ const ClassesPage = () => {
     const [pagination, setPagination] = useState({
         pageNo: 1,
         pageSize: 10,
-        count: 0,
+        totalCount: 0,
         totalPage: 0,
     });
     const [sorting, setSorting] = useState<{ sortBy?: string; sortOrder?: 'asc' | 'desc' }>({});
@@ -46,13 +46,12 @@ const ClassesPage = () => {
             const result = await fetchClasses(page, pageSize, sortBy, sortOrder, search);
             setData(result.items);
 
-            console.log('req: ', page, pageSize, sortBy, sortOrder, search);
             console.log('data: ', result);
             setPagination({
                 pageNo: page,
                 pageSize: result.pageSize,
                 totalPage: result.totalPage,
-                count: result.totalCount
+                totalCount: result.totalCount
             })
 
         } catch (error) {
@@ -113,7 +112,7 @@ const ClassesPage = () => {
                     pageNumber: pagination.pageNo - 1, // TanStack uses 0-based indexing
                     pageSize: pagination.pageSize,
                     totalPage: pagination.totalPage,
-                    count: pagination.count,
+                    totalCount: pagination.totalCount,
                 }}
                 onPaginationChange={({pageNumber, pageSize}) => {
                     if (pageSize !== pagination.pageSize) {
