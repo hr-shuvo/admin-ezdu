@@ -19,8 +19,6 @@ const fetchClasses = async (page: number, pageSize: number, sortBy?: string, ord
         ...(search && {search: search}),
     });
 
-    console.log(params.values());
-
     const baseUrl = process.env.NEXT_PUBLIC_API_URL;
     const response = await fetch(`${baseUrl}/classes?${params}`);
 
@@ -49,7 +47,7 @@ const ClassesPage = () => {
             const result = await fetchClasses(page, pageSize, sortBy, sortOrder, search);
             setData(result.items);
 
-            console.log('data: ', result);
+            // console.log('data: ', result.items);
             setPagination({
                 pageNo: page,
                 pageSize: result.pageSize,
