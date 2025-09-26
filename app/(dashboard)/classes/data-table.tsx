@@ -62,6 +62,17 @@ export function DataTable<TData, TValue>({
         }
     }, [pagination, paginationState.pageIndex, paginationState.pageSize]);
 
+    useEffect(() => {
+        if (!onSortingChange) return;
+
+        if (sorting.length > 0) {
+            const sort = sorting[0];
+            onSortingChange(sort.id, sort.desc ? 'desc' : 'asc');
+        } else {
+            onSortingChange(undefined, undefined);
+        }
+    }, [sorting]);
+
 
     // useEffect(() => {
     //     if (onSortingChange && sorting.length > 0) {
@@ -152,7 +163,10 @@ export function DataTable<TData, TValue>({
 
             </div>
 
-            <DataTablePagination table={table}/>
+            {
+                !loading && (<DataTablePagination table={table}/>)
+            }
+
         </div>
     )
 }

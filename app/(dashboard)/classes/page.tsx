@@ -8,15 +8,18 @@ import { Input } from "@/components/ui/input";
 import { useDebounce } from "@/hooks/use-debounce";
 
 
-const fetchClasses = async (page: number, pageSize:number, sortBy?: string, sortOrder?: string, search?: string): Promise<PaginatedList<unknown>> => {
+const fetchClasses = async (page: number, pageSize: number, sortBy?: string, orderBy?: string, search?: string): Promise<PaginatedList<unknown>> => {
 
+    // console.log(page, pageSize, sortBy, orderBy, search);
     const params = new URLSearchParams({
         PageNumber: page.toString(),
         pageSize: pageSize.toString(),
         ...(sortBy && {sortBy: sortBy}),
-        ...(sortOrder && {sortOrder: sortOrder}),
+        ...(orderBy && {orderBy: orderBy}),
         ...(search && {search: search}),
-    })
+    });
+
+    console.log(params.values());
 
     const baseUrl = process.env.NEXT_PUBLIC_API_URL;
     const response = await fetch(`${baseUrl}/classes?${params}`);
@@ -33,13 +36,13 @@ const ClassesPage = () => {
         totalCount: 0,
         totalPage: 0,
     });
-    const [sorting, setSorting] = useState<{ sortBy?: string; sortOrder?: 'asc' | 'desc' }>({});
+    const [sorting, setSorting] = useState<{ orderBy?: string; sortBy?: 'asc' | 'desc'; }>({});
     const [searchQuery, setSearchQuery] = useState('');
 
     const debouncedSearchQuery = useDebounce(searchQuery, 300);
 
 
-    const loadData = useCallback(async (page: number, pageSize:number, sortBy?: string, sortOrder?: string, search?: string) => {
+    const loadData = useCallback(async (page: number, pageSize: number, sortBy?: string, sortOrder?: string, search?: string) => {
         setLoading(true);
 
         try {
@@ -60,14 +63,14 @@ const ClassesPage = () => {
         } finally {
             setLoading(false);
         }
-    }, [pagination]);
+    }, []);
 
     useEffect(() => {
 
-        loadData(pagination.pageNo, pagination.pageSize);
+        loadData(pagination.pageNo, pagination.pageSize, sorting.sortBy, sorting.orderBy, debouncedSearchQuery);
 
         // console.log(pagination)
-    }, [pagination.pageNo, pagination.pageSize]);
+    }, [pagination.pageNo, pagination.pageSize, sorting.sortBy, sorting.orderBy, debouncedSearchQuery]);
 
 
     const handlePageChange = (newPageNo: number) => {
@@ -78,8 +81,8 @@ const ClassesPage = () => {
         setPagination(prev => ({...prev, pageSize: newPageSize, pageNo: 1}));
     };
 
-    const handleSortingChange = (sortBy?: string, sortOrder?: 'asc' | 'desc') => {
-        setSorting({sortBy, sortOrder});
+    const handleSortingChange = (orderBy?: string, sortBy?: 'asc' | 'desc') => {
+        setSorting({orderBy, sortBy});
         setPagination(prev => ({...prev, pageNo: 1})); // Reset to first page when sorting changes
     };
 
