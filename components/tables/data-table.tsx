@@ -16,7 +16,7 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table"
-import { DataTablePagination } from "@/components/table-pagination";
+import { DataTablePagination } from "@/components/tables/table-pagination";
 import { useState, useEffect } from "react";
 
 interface DataTableProps<TData, TValue> {

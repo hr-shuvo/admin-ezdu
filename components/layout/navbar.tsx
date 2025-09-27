@@ -15,6 +15,7 @@ import { Button } from "@/components/ui/button";
 import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
 import { SidebarTrigger } from "@/components/ui/sidebar";
+import Breadcrumbs from "@/components/layout/breadcrumb";
 
 
 const Navbar = () => {
@@ -32,7 +33,12 @@ const Navbar = () => {
     return (
 
         <nav className="p-4 flex items-center justify-between">
-            <SidebarTrigger/>
+
+            <div className='flex items-center gap-4'>
+                <SidebarTrigger className='cursor-pointer'/>
+                <Breadcrumbs/>
+            </div>
+
 
             <div className='flex items-center justify-between gap-4'>
                 <Link href="/public">Dashboard</Link>

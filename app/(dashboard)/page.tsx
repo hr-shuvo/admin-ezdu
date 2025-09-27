@@ -1,10 +1,10 @@
-import AppBarChart from "@/components/chart-bar";
-import AppAreaChart from "@/components/chart-area-gradient";
-import AppPieChart from "@/components/chart-pie";
+import AppBarChart from "@/components/charts/chart-bar";
+import AppAreaChart from "@/components/charts/chart-area-gradient";
+import AppPieChart from "@/components/charts/chart-pie";
 import CardList from "@/components/card-list";
 import TodoList from "@/components/todo-list";
 
-const Home = () => {
+const Dashboard = () => {
     return (
         <>
             <div className='grid grid-cols-1 lg:grid-cols-2 2xl:grid-cols-4 gap-4'>
@@ -37,4 +37,4 @@ const Home = () => {
     );
 }
 
-export default Home;
+export default Dashboard;
