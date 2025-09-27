@@ -35,7 +35,7 @@ const Navbar = () => {
             <SidebarTrigger/>
 
             <div className='flex items-center justify-between gap-4'>
-                <Link href="/">Dashboard</Link>
+                <Link href="/public">Dashboard</Link>
 
                 <Button variant="outline" size="icon"
                         onClick={() => theme == 'dark' ? setTheme('light') : setTheme('dark')}>

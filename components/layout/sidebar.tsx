@@ -75,7 +75,7 @@ const AppSidebar = () => {
                 <SidebarMenu>
                     <SidebarMenuItem>
                         <SidebarMenuButton asChild>
-                            <Link href='/'>
+                            <Link href='/public'>
                                 <Image src='/vercel.svg' alt='logo' width={20} height={20}/>
                                 <span>EzDu</span>
                             </Link>
@@ -181,12 +181,12 @@ const AppSidebar = () => {
                                 <SidebarMenu>
                                     <SidebarMenuItem>
                                         <SidebarMenuButton asChild>
-                                            <Link href='/'><Projector/> See All Users</Link>
+                                            <Link href='/public'><Projector/> See All Users</Link>
                                         </SidebarMenuButton>
                                     </SidebarMenuItem>
                                     <SidebarMenuItem>
                                         <SidebarMenuButton asChild>
-                                            <Link href='/'><Plus/> Manage users</Link>
+                                            <Link href='/public'><Plus/> Manage users</Link>
                                         </SidebarMenuButton>
                                     </SidebarMenuItem>
                                 </SidebarMenu>

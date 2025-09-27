@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import "./globals.css";
-import AppSidebar from "@/components/sidebar";
-import Navbar from "@/components/navbar";
+import "../globals.css";
+import AppSidebar from "@/components/layout/sidebar";
+import Navbar from "@/components/layout/navbar";
 import { ThemeProvider } from "@/components/providers/theme-provider";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { cookies } from "next/headers";

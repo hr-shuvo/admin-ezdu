@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { PaginatedList } from "@/types/pagination";
-import { DataTable } from "@/app/(dashboard)/classes/data-table";
+import { DataTable } from "@/components/tables/data-table";
 import { classColumns } from "@/app/(dashboard)/classes/columns";
 import { Input } from "@/components/ui/input";
 import { useDebounce } from "@/hooks/use-debounce";
