@@ -1,74 +1,44 @@
 'use client';
 
-import { useCallback, useEffect, useState } from "react";
-import { PaginatedList } from "@/types/pagination";
+import { useEffect, useState, useTransition } from "react";
 import { DataTable } from "@/components/tables/data-table";
 import { classColumns } from "@/app/(dashboard)/classes/columns";
 import { Input } from "@/components/ui/input";
 import { useDebounce } from "@/hooks/use-debounce";
+import { getClassList } from "@/services/class.service";
+import { Pagination, Sorting } from "@/lib/constants/pagination";
 
 
-const fetchClasses = async (page: number, pageSize: number, sortBy?: string, orderBy?: string, search?: string): Promise<PaginatedList<unknown>> => {
 
-    // console.log(page, pageSize, sortBy, orderBy, search);
-    const params = new URLSearchParams({
-        PageNumber: page.toString(),
-        pageSize: pageSize.toString(),
-        ...(sortBy && {sortBy: sortBy}),
-        ...(orderBy && {orderBy: orderBy}),
-        ...(search && {search: search}),
-    });
-
-    const baseUrl = process.env.NEXT_PUBLIC_API_URL;
-    const response = await fetch(`${baseUrl}/classes?${params}`);
-
-    return response.json();
-}
 
 const ClassesPage = () => {
-    const [loading, setLoading] = useState(false);
+    const [isPending, startTransition] = useTransition();
     const [data, setData] = useState<unknown[]>([]);
-    const [pagination, setPagination] = useState({
-        pageNo: 1,
-        pageSize: 10,
-        totalCount: 0,
-        totalPage: 0,
+    const [pagination, setPagination] = useState<Pagination>({
+        pageNumber:1, pageSize:10, totalCount:0, totalPage:0
     });
-    const [sorting, setSorting] = useState<{ orderBy?: string; sortBy?: 'asc' | 'desc'; }>({});
+    const [sorting, setSorting] = useState<Sorting>({});
     const [searchQuery, setSearchQuery] = useState('');
+    const debouncedSearchQuery = useDebounce(searchQuery, 500);
 
-    const debouncedSearchQuery = useDebounce(searchQuery, 300);
 
-
-    const loadData = useCallback(async (page: number, pageSize: number, sortBy?: string, sortOrder?: string, search?: string) => {
-        setLoading(true);
-
-        try {
-            const result = await fetchClasses(page, pageSize, sortBy, sortOrder, search);
-            setData(result.items);
-
-            // console.log('data: ', result.items);
-            setPagination({
-                pageNo: page,
-                pageSize: result.pageSize,
-                totalPage: result.totalPage,
-                totalCount: result.totalCount
-            })
-
-        } catch (error) {
-            console.error('Error fetching classes:', error);
-
-        } finally {
-            setLoading(false);
-        }
-    }, []);
 
     useEffect(() => {
 
-        loadData(pagination.pageNo, pagination.pageSize, sorting.sortBy, sorting.orderBy, debouncedSearchQuery);
+        startTransition(async () =>{
+            const result = await getClassList(pagination.pageNumber, pagination.pageSize, sorting.orderBy, sorting.sortBy, debouncedSearchQuery);
+            console.log(result);
+            setData(result.items);
 
-        // console.log(pagination)
-    }, [pagination.pageNo, pagination.pageSize, sorting.sortBy, sorting.orderBy, debouncedSearchQuery]);
+            setPagination({
+                pageNumber: pagination.pageNumber,
+                pageSize: result.pageSize,
+                totalPage: result.totalPage,
+                totalCount: result.totalCount
+            });
+        })
+
+    }, [pagination.pageNumber, pagination.pageSize, sorting.sortBy, sorting.orderBy, debouncedSearchQuery]);
 
 
     const handlePageChange = (newPageNo: number) => {
@@ -108,9 +78,9 @@ const ClassesPage = () => {
             <DataTable
                 columns={classColumns}
                 data={data}
-                loading={loading}
+                loading={isPending}
                 pagination={{
-                    pageNumber: pagination.pageNo - 1, // TanStack uses 0-based indexing
+                    pageNumber: pagination.pageNumber - 1, // TanStack uses 0-based indexing
                     pageSize: pagination.pageSize,
                     totalPage: pagination.totalPage,
                     totalCount: pagination.totalCount,
@@ -118,7 +88,7 @@ const ClassesPage = () => {
                 onPaginationChange={({pageNumber, pageSize}) => {
                     if (pageSize !== pagination.pageSize) {
                         handlePageSizeChange(pageSize);
-                    } else if (pageNumber + 1 !== pagination.pageNo) {
+                    } else if (pageNumber + 1 !== pagination.pageNumber) {
                         handlePageChange(pageNumber + 1);
                     }
                 }}
