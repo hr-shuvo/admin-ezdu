@@ -3,7 +3,7 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
-import { ArrowUpDown, Edit, Eye, MoreHorizontal, Trash } from "lucide-react";
+import { ArrowUpDown, Edit, Eye, MoreHorizontal, RotateCw, Trash } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { EntityStatus, StatusMap } from "@/lib/constants/status";
 import { formatDateTime } from "@/lib/utils/datetime-helper-fns";
@@ -16,7 +16,9 @@ import {
 import { useRouter } from "next/navigation";
 import ConfirmDialog from "@/components/common/confirm-dialog";
 import { useTransition } from "react";
-import { deleteClass } from "@/services/class.service";
+import { classService } from "@/services/class.service";
+import { showToast } from "@/components/common/toast";
+import { cn } from "@/lib/utils";
 
 
 export const classColumns = (refreshData: () => void): ColumnDef<any>[] => [
@@ -38,6 +40,17 @@ export const classColumns = (refreshData: () => void): ColumnDef<any>[] => [
         ),
         enableSorting: false,
         enableHiding: false
+    },
+    {
+        id: "index",
+        header: "#",
+        cell: ({row, table}) => {
+            const pageNumber = table.getState().pagination.pageIndex;
+            const pageSize = table.getState().pagination.pageSize;
+            return <div>{pageNumber * pageSize + row.index + 1}</div>; // +1 to start counting from 1
+        },
+        enableSorting: false,
+        enableHiding: false,
     },
     {
         accessorKey: 'name',
@@ -140,21 +153,35 @@ const ActionCell = ({data, refreshData}: { data: any, refreshData: () => void })
 
     const handleDelete = () => {
         startTransition(async () => {
-
             try {
-                await deleteClass(data.id);
+                await classService.delete(data.id);
                 refreshData();
+                showToast("Delete Success", "info")
             } catch {
             }
-
-
         })
     };
 
     const handlePermanentDelete = () => {
-        alert(data.id);
-        refreshData();
+        startTransition(async () => {
+            try {
+                await classService.delete(data.id);
+                refreshData();
+                showToast("Delete Success", "info")
+            } catch {
+            }
+        })
     };
+
+    const handleRestore = () => {
+        startTransition(async () => {
+            try {
+                await classService.restore(data.id);
+                showToast("Restore Success", "success")
+            } catch {
+            }
+        })
+    }
 
 
     return (
@@ -168,59 +195,80 @@ const ActionCell = ({data, refreshData}: { data: any, refreshData: () => void })
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
                 <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                <DropdownMenuItem
-                    onClick={() => navigator.clipboard.writeText(data.id)}
+
+                <DropdownMenuItem disabled={isPending}
+                                  onClick={() => navigator.clipboard.writeText(data.id)}
                 >
-                    Copy class ID
+                    Copy ID
                 </DropdownMenuItem>
                 <DropdownMenuSeparator/>
 
-                <DropdownMenuItem className="text-blue-500 hover:bg-blue-100 flex items-center gap-2">
+                <DropdownMenuItem disabled={isPending}
+                                  className="text-blue-500 hover:bg-blue-100 flex items-center gap-2"
+                                  onClick={() => router.push(`./classes/${data.id}`)}>
                     <Eye className="w-4 h-4 text-blue-500 hover:bg-blue-100"/>
-                    View Class
+                    View
                 </DropdownMenuItem>
 
-                <DropdownMenuItem className="text-green-500 hover:bg-green-100 flex items-center gap-2">
+                <DropdownMenuItem disabled={isPending}
+                                  className="text-green-500 hover:bg-green-100 flex items-center gap-2"
+                                  onClick={() => router.push(`./classes/form/${data.id}`)}>
                     <Edit className="w-4 h-4 text-green-500 hover:bg-green-100 "/>
-                    Edit Class
+                    Edit
                 </DropdownMenuItem>
 
 
-                <ConfirmDialog
-                    title="Delete Class"
-                    description="Are you sure you want to delete this class? This action cannot be undone."
-                    confirmText="Delete"
-                    cancelText="Cancel"
-                    confirmColor="destructive"
-                    onConfirm={handleDelete}
-                    trigger={
-                        <DropdownMenuItem
-                            className="text-red-500 hover:bg-red-100 flex items-center gap-2"
-                            onSelect={(e) => e.preventDefault()}
-                        >
-                            <Trash className="w-4 h-4 text-red-500 hover:bg-red-100"/>
-                            Delete
-                        </DropdownMenuItem>
-                    }
-                />
+                {
+                    data.status === -404 ? (
+                            <>
+                                <DropdownMenuItem disabled={isPending}
+                                                  className="text-orange-500 hover:bg-orange-100 flex items-center gap-2"
+                                                  onClick={handleRestore}>
+                                    <RotateCw className="w-4 h-4 text-orange-500"/>
+                                    Restore
+                                </DropdownMenuItem>
 
-                <ConfirmDialog
-                    title="Permanent Delete Class"
-                    description="Are you sure you want to permanent delete this class? This action cannot be undone."
-                    confirmText="Permanent Delete"
-                    cancelText="Cancel"
-                    confirmColor="destructive"
-                    onConfirm={handlePermanentDelete}
-                    trigger={
-                        <DropdownMenuItem
-                            className="text-red-500 hover:bg-red-100 flex items-center gap-2"
-                            onSelect={(e) => e.preventDefault()}
-                        >
-                            <Trash className="w-4 h-4 text-red-500 hover:bg-red-100"/>
-                            Permanent Delete
-                        </DropdownMenuItem>
-                    }
-                />
+                                <ConfirmDialog
+                                    title="Permanent Delete Class"
+                                    description="Are you sure you want to permanent delete this class? This action cannot be undone."
+                                    confirmText="Permanent Delete"
+                                    cancelText="Cancel"
+                                    confirmColor="destructive"
+                                    onConfirm={handlePermanentDelete}
+                                    trigger={
+                                        <DropdownMenuItem disabled={isPending}
+                                                          className="text-red-500 hover:bg-red-100 flex items-center gap-2"
+                                                          onSelect={(e) => e.preventDefault()}
+                                        >
+                                            <Trash className="w-4 h-4 text-red-500 hover:bg-red-100"/>
+                                            Permanent Delete
+                                        </DropdownMenuItem>
+                                    }
+                                />
+
+                            </>
+                        )
+                        : (
+                            <ConfirmDialog
+                                title={`Delete ${data.name}`}
+                                description="Are you sure you want to delete this class? This action cannot be undone."
+                                confirmText="Delete"
+                                cancelText="Cancel"
+                                confirmColor="destructive"
+                                onConfirm={handleDelete}
+                                trigger={
+                                    <DropdownMenuItem disabled={isPending}
+                                                      className="text-red-500 hover:bg-red-100 flex items-center gap-2 disabled"
+                                                      onSelect={(e) => e.preventDefault()}
+                                    >
+                                        <Trash
+                                            className={cn("w-4 h-4 text-red-500 hover:bg-red-100", isPending && "animate-spin")}/>
+                                        Delete
+                                    </DropdownMenuItem>
+                                }
+                            />
+                        )
+                }
 
 
             </DropdownMenuContent>

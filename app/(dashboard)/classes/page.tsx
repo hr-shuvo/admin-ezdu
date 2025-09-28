@@ -5,7 +5,7 @@ import { DataTable } from "@/components/tables/data-table";
 import { classColumns } from "@/app/(dashboard)/classes/columns";
 import { Input } from "@/components/ui/input";
 import { useDebounce } from "@/hooks/use-debounce";
-import { getClassList } from "@/services/class.service";
+import { classService } from "@/services/class.service";
 import { Pagination, Sorting } from "@/lib/constants/pagination";
 
 
@@ -24,7 +24,7 @@ const ClassesPage = () => {
     useEffect(() => {
 
         startTransition(async () =>{
-            const result = await getClassList(pagination.pageNumber, pagination.pageSize, sorting.orderBy, sorting.sortBy, debouncedSearchQuery);
+            const result = await classService.getList(pagination.pageNumber, pagination.pageSize, sorting.orderBy, sorting.sortBy, debouncedSearchQuery);
             // console.log(result);
             setData(result.items);
 
@@ -43,21 +43,21 @@ const ClassesPage = () => {
     }
 
     const handlePageChange = (newPageNo: number) => {
-        setPagination(prev => ({...prev, pageNo: newPageNo}));
+        setPagination((prev:Pagination) => ({...prev, pageNumber: newPageNo}));
     };
 
     const handlePageSizeChange = (newPageSize: number) => {
-        setPagination(prev => ({...prev, pageSize: newPageSize, pageNo: 1}));
+        setPagination((prev:Pagination) => ({...prev, pageSize: newPageSize, pageNumber: 1}));
     };
 
     const handleSortingChange = (orderBy?: string, sortBy?: 'asc' | 'desc') => {
         setSorting({orderBy, sortBy});
-        setPagination(prev => ({...prev, pageNo: 1})); // Reset to first page when sorting changes
+        setPagination((prev:Pagination) => ({...prev, pageNumber: 1})); // Reset to first page when sorting changes
     };
 
     const handleSearchChange = (query: string) => {
         setSearchQuery(query);
-        setPagination(prev => ({...prev, pageNo: 1})); // Reset to first page when searching
+        setPagination((prev:Pagination) => ({...prev, pageNumber: 1})); // Reset to first page when searching
     };
 
 

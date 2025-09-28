@@ -2,7 +2,7 @@ import { PaginatedList } from "@/types/pagination";
 import { httpClient } from "@/lib/api/client";
 
 
-export const getClassList = async (page: number, size: number, orderBy?: string, sortBy?: 'asc' | 'desc', search?: string): Promise<PaginatedList<any>> => {
+const getList = async (page: number, size: number, orderBy?: string, sortBy?: 'asc' | 'desc', search?: string): Promise<PaginatedList<any>> => {
 
     const params = new URLSearchParams({
         pageNumber: page.toString(),
@@ -20,17 +20,17 @@ export const getClassList = async (page: number, size: number, orderBy?: string,
     return response.data;
 }
 
-export const saveClass = async (model: any): Promise<any> => {
+const save = async (model: any): Promise<any> => {
     const response = await httpClient.post(`/classes/save`, model);
     return response.data;
 }
 
-export const getClass = async (id: number): Promise<any> => {
+const get = async (id: number): Promise<any> => {
     const response = await httpClient.get(`/classes/${id}`);
     return response.data;
 }
 
-export const deleteClass = async (id: number): Promise<any> => {
+const remove = async (id: number): Promise<any> => {
     // try {
     //
     // } catch (error) {
@@ -41,7 +41,22 @@ export const deleteClass = async (id: number): Promise<any> => {
     return response.data;
 }
 
-export const permanentDelete = async (id: number): Promise<any> => {
+const permanentDelete = async (id: number): Promise<any> => {
     const response = await httpClient.delete(`/classes/permanent-delete/${id}`);
     return response.data;
+}
+
+const restore = async (id: number): Promise<any> => {
+    const response = await httpClient.patch(`/classes/restore/${id}`);
+    return response.data;
+}
+
+
+export const classService = {
+    getList,
+    get,
+    save,
+    delete:remove,
+    permanentDelete,
+    restore,
 }
