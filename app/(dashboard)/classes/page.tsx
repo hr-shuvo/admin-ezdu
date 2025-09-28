@@ -9,10 +9,9 @@ import { getClassList } from "@/services/class.service";
 import { Pagination, Sorting } from "@/lib/constants/pagination";
 
 
-
-
 const ClassesPage = () => {
     const [isPending, startTransition] = useTransition();
+    const [refresh, setRefresh] = useState<boolean>(false);
     const [data, setData] = useState<unknown[]>([]);
     const [pagination, setPagination] = useState<Pagination>({
         pageNumber:1, pageSize:10, totalCount:0, totalPage:0
@@ -22,12 +21,11 @@ const ClassesPage = () => {
     const debouncedSearchQuery = useDebounce(searchQuery, 500);
 
 
-
     useEffect(() => {
 
         startTransition(async () =>{
             const result = await getClassList(pagination.pageNumber, pagination.pageSize, sorting.orderBy, sorting.sortBy, debouncedSearchQuery);
-            console.log(result);
+            // console.log(result);
             setData(result.items);
 
             setPagination({
@@ -38,8 +36,11 @@ const ClassesPage = () => {
             });
         })
 
-    }, [pagination.pageNumber, pagination.pageSize, sorting.sortBy, sorting.orderBy, debouncedSearchQuery]);
+    }, [pagination.pageNumber, pagination.pageSize, sorting.sortBy, sorting.orderBy, debouncedSearchQuery, refresh]);
 
+    function refreshData() {
+        setRefresh(!refresh);
+    }
 
     const handlePageChange = (newPageNo: number) => {
         setPagination(prev => ({...prev, pageNo: newPageNo}));
@@ -76,7 +77,7 @@ const ClassesPage = () => {
             </div>
 
             <DataTable
-                columns={classColumns}
+                columns={classColumns(refreshData)}
                 data={data}
                 loading={isPending}
                 pagination={{

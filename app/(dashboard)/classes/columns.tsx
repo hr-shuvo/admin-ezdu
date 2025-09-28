@@ -3,7 +3,7 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
-import { ArrowUpDown, MoreHorizontal } from "lucide-react";
+import { ArrowUpDown, Edit, Eye, MoreHorizontal, Trash } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { EntityStatus, StatusMap } from "@/lib/constants/status";
 import { formatDateTime } from "@/lib/utils/datetime-helper-fns";
@@ -13,9 +13,13 @@ import {
     DropdownMenuLabel, DropdownMenuSeparator,
     DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu";
+import { useRouter } from "next/navigation";
+import ConfirmDialog from "@/components/common/confirm-dialog";
+import { useTransition } from "react";
+import { deleteClass } from "@/services/class.service";
 
 
-export const classColumns: ColumnDef<any>[] = [
+export const classColumns = (refreshData: () => void): ColumnDef<any>[] => [
     {
         id: "select",
         header: ({table}) => (
@@ -52,7 +56,7 @@ export const classColumns: ColumnDef<any>[] = [
     {
         accessorKey: 'groups',
         header: "Groups",
-        cell:({getValue})=>{
+        cell: ({getValue}) => {
             const groups = getValue() as string;
 
             return groups ? (
@@ -123,32 +127,106 @@ export const classColumns: ColumnDef<any>[] = [
     },
     {
         id: "actions",
-        cell: ({row}) => {
-            const data = row.original
-
-            return (
-                <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" className="h-8 w-8 p-0">
-                            <span className="sr-only">Open menu</span>
-                            <MoreHorizontal className="h-4 w-4"/>
-                        </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                        <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                        <DropdownMenuItem
-                            onClick={() => navigator.clipboard.writeText(data.id)}
-                        >
-                            Copy class ID
-                        </DropdownMenuItem>
-                        <DropdownMenuSeparator/>
-                        <DropdownMenuItem>View customer</DropdownMenuItem>
-                        <DropdownMenuItem>View class details</DropdownMenuItem>
-                    </DropdownMenuContent>
-                </DropdownMenu>
-            )
-        },
+        cell: ({row}) => <ActionCell data={row.original} refreshData={refreshData}/>
     }
 
-]
+];
+
+
+const ActionCell = ({data, refreshData}: { data: any, refreshData: () => void }) => {
+    const router = useRouter();
+    const [isPending, startTransition] = useTransition();
+
+
+    const handleDelete = () => {
+        startTransition(async () => {
+
+            try {
+                await deleteClass(data.id);
+                refreshData();
+            } catch {
+            }
+
+
+        })
+    };
+
+    const handlePermanentDelete = () => {
+        alert(data.id);
+        refreshData();
+    };
+
+
+    return (
+
+        <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+                <Button variant="ghost" className="h-8 w-8 p-0">
+                    <span className="sr-only">Open menu</span>
+                    <MoreHorizontal className="h-4 w-4"/>
+                </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+                <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                <DropdownMenuItem
+                    onClick={() => navigator.clipboard.writeText(data.id)}
+                >
+                    Copy class ID
+                </DropdownMenuItem>
+                <DropdownMenuSeparator/>
+
+                <DropdownMenuItem className="text-blue-500 hover:bg-blue-100 flex items-center gap-2">
+                    <Eye className="w-4 h-4 text-blue-500 hover:bg-blue-100"/>
+                    View Class
+                </DropdownMenuItem>
+
+                <DropdownMenuItem className="text-green-500 hover:bg-green-100 flex items-center gap-2">
+                    <Edit className="w-4 h-4 text-green-500 hover:bg-green-100 "/>
+                    Edit Class
+                </DropdownMenuItem>
+
+
+                <ConfirmDialog
+                    title="Delete Class"
+                    description="Are you sure you want to delete this class? This action cannot be undone."
+                    confirmText="Delete"
+                    cancelText="Cancel"
+                    confirmColor="destructive"
+                    onConfirm={handleDelete}
+                    trigger={
+                        <DropdownMenuItem
+                            className="text-red-500 hover:bg-red-100 flex items-center gap-2"
+                            onSelect={(e) => e.preventDefault()}
+                        >
+                            <Trash className="w-4 h-4 text-red-500 hover:bg-red-100"/>
+                            Delete
+                        </DropdownMenuItem>
+                    }
+                />
+
+                <ConfirmDialog
+                    title="Permanent Delete Class"
+                    description="Are you sure you want to permanent delete this class? This action cannot be undone."
+                    confirmText="Permanent Delete"
+                    cancelText="Cancel"
+                    confirmColor="destructive"
+                    onConfirm={handlePermanentDelete}
+                    trigger={
+                        <DropdownMenuItem
+                            className="text-red-500 hover:bg-red-100 flex items-center gap-2"
+                            onSelect={(e) => e.preventDefault()}
+                        >
+                            <Trash className="w-4 h-4 text-red-500 hover:bg-red-100"/>
+                            Permanent Delete
+                        </DropdownMenuItem>
+                    }
+                />
+
+
+            </DropdownMenuContent>
+        </DropdownMenu>
+
+    );
+
+}
 
