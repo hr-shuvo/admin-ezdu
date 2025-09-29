@@ -34,30 +34,3 @@ const AuthLayout = ({children}: Props) => {
 export default AuthLayout;
 
 
-
-
-//
-// <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center p-4">
-//
-//     <div className="absolute inset-0 overflow-hidden">
-//         <div className="absolute -top-40 -right-40 w-80 h-80 bg-purple-500 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-pulse"></div>
-//         <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-pink-500 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-pulse"></div>
-//         <div className="absolute top-40 left-40 w-80 h-80 bg-blue-500 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-pulse"></div>
-//     </div>
-//
-//
-//     <div className="relative w-full max-w-md">
-//
-//         <div className="backdrop-blur-xl bg-white/10 border border-white/20 rounded-2xl shadow-2xl p-8 transition-all duration-500 hover:shadow-purple-500/25">
-//
-//             <div className="text-center mb-8">
-//                 <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full mb-4 shadow-lg">
-//                     <Sparkles className="w-8 h-8 text-white" />
-//                 </div>
-//             </div>
-//
-//             {children}
-//         </div>
-//     </div>
-// </div>
-//
