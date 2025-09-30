@@ -29,7 +29,7 @@ export function showToast(
     message: string,
     type: ToastType = "info",
     position: "top-right" | "top-left" | "bottom-right" | "bottom-left" = "top-right",
-    duration: number = 3000
+    duration: number = 5000
 ) {
     toast(message, {
         position,
