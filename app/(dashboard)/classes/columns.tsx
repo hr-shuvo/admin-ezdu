@@ -165,9 +165,9 @@ const ActionCell = ({data, refreshData}: { data: any, refreshData: () => void })
     const handlePermanentDelete = () => {
         startTransition(async () => {
             try {
-                await classService.delete(data.id);
+                await classService.permanentDelete(data.id);
                 refreshData();
-                showToast("Delete Success", "info")
+                showToast("Delete Success", "warning")
             } catch {
             }
         })
@@ -177,6 +177,7 @@ const ActionCell = ({data, refreshData}: { data: any, refreshData: () => void })
         startTransition(async () => {
             try {
                 await classService.restore(data.id);
+                refreshData();
                 showToast("Restore Success", "success")
             } catch {
             }

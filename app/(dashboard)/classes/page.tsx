@@ -7,6 +7,9 @@ import { Input } from "@/components/ui/input";
 import { useDebounce } from "@/hooks/use-debounce";
 import { classService } from "@/services/class.service";
 import { Pagination, Sorting } from "@/lib/constants/pagination";
+import { Select, SelectContent, SelectItem, SelectTrigger } from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 
 
 const ClassesPage = () => {
@@ -14,17 +17,19 @@ const ClassesPage = () => {
     const [refresh, setRefresh] = useState<boolean>(false);
     const [data, setData] = useState<unknown[]>([]);
     const [pagination, setPagination] = useState<Pagination>({
-        pageNumber:1, pageSize:10, totalCount:0, totalPage:0
+        pageNumber: 1, pageSize: 10, totalCount: 0, totalPage: 0
     });
     const [sorting, setSorting] = useState<Sorting>({});
     const [searchQuery, setSearchQuery] = useState('');
     const debouncedSearchQuery = useDebounce(searchQuery, 500);
+    const [withDeleted, setWithDeleted] = useState<boolean>(false);
+    const debouncedWithDeleted = useDebounce(withDeleted, 500);
 
 
     useEffect(() => {
 
-        startTransition(async () =>{
-            const result = await classService.getList(pagination.pageNumber, pagination.pageSize, sorting.orderBy, sorting.sortBy, debouncedSearchQuery);
+        startTransition(async () => {
+            const result = await classService.getList(pagination.pageNumber, pagination.pageSize, sorting.orderBy, sorting.sortBy, debouncedSearchQuery, debouncedWithDeleted);
             // console.log(result);
             setData(result.items);
 
@@ -36,28 +41,28 @@ const ClassesPage = () => {
             });
         })
 
-    }, [pagination.pageNumber, pagination.pageSize, sorting.sortBy, sorting.orderBy, debouncedSearchQuery, refresh]);
+    }, [pagination.pageNumber, pagination.pageSize, sorting.sortBy, sorting.orderBy, debouncedSearchQuery, refresh, debouncedWithDeleted]);
 
     function refreshData() {
         setRefresh(!refresh);
     }
 
     const handlePageChange = (newPageNo: number) => {
-        setPagination((prev:Pagination) => ({...prev, pageNumber: newPageNo}));
+        setPagination((prev: Pagination) => ({...prev, pageNumber: newPageNo}));
     };
 
     const handlePageSizeChange = (newPageSize: number) => {
-        setPagination((prev:Pagination) => ({...prev, pageSize: newPageSize, pageNumber: 1}));
+        setPagination((prev: Pagination) => ({...prev, pageSize: newPageSize, pageNumber: 1}));
     };
 
     const handleSortingChange = (orderBy?: string, sortBy?: 'asc' | 'desc') => {
         setSorting({orderBy, sortBy});
-        setPagination((prev:Pagination) => ({...prev, pageNumber: 1})); // Reset to first page when sorting changes
+        setPagination((prev: Pagination) => ({...prev, pageNumber: 1})); // Reset to first page when sorting changes
     };
 
     const handleSearchChange = (query: string) => {
         setSearchQuery(query);
-        setPagination((prev:Pagination) => ({...prev, pageNumber: 1})); // Reset to first page when searching
+        setPagination((prev: Pagination) => ({...prev, pageNumber: 1})); // Reset to first page when searching
     };
 
 
@@ -67,13 +72,24 @@ const ClassesPage = () => {
                 <h1 className='font-semibold'>All Class</h1>
             </div>
 
-            <div className='mb-4'>
+            <div className='mb-4 flex items-center gap-2'>
                 <Input
                     placeholder="Search classes..."
                     value={searchQuery}
                     onChange={(e) => handleSearchChange(e.target.value)}
                     className="max-w-sm"
                 />
+
+                <div className="flex items-center space-x-2">
+                    <Switch
+                        id="toggle-mode"
+                        checked={withDeleted}
+                        onCheckedChange={(checked) => setWithDeleted(checked)}
+                    />
+                    <Label htmlFor="toggle-mode">With Deleted</Label>
+                </div>
+
+
             </div>
 
             <DataTable
