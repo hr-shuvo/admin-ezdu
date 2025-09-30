@@ -135,25 +135,25 @@ const AppSidebar = () => {
 
                                     <SidebarMenuItem>
                                         <SidebarMenuButton asChild>
-                                            <Link href='/classes'><BookOpen/>Subject</Link>
+                                            <Link href='/subjects'><BookOpen/>Subject</Link>
                                         </SidebarMenuButton>
                                     </SidebarMenuItem>
 
                                     <SidebarMenuItem>
                                         <SidebarMenuButton asChild>
-                                            <Link href='/classes'><Notebook/>Lesson</Link>
+                                            <Link href='/lessons'><Notebook/>Lesson</Link>
                                         </SidebarMenuButton>
                                     </SidebarMenuItem>
 
                                     <SidebarMenuItem>
                                         <SidebarMenuButton asChild>
-                                            <Link href='/classes'><ListTree/>Topic</Link>
+                                            <Link href='/topics'><ListTree/>Topic</Link>
                                         </SidebarMenuButton>
                                     </SidebarMenuItem>
 
                                     <SidebarMenuItem>
                                         <SidebarMenuButton asChild>
-                                            <Link href='/classes'><FileText/>Topic Content</Link>
+                                            <Link href='/topic-content'><FileText/>Topic Content</Link>
                                         </SidebarMenuButton>
                                     </SidebarMenuItem>
 
