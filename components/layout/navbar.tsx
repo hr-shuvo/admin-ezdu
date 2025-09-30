@@ -16,11 +16,13 @@ import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import Breadcrumbs from "@/components/layout/breadcrumb";
-
+import { authService } from "@/services/auth.service";
+import { useRouter } from "next/navigation";
 
 const Navbar = () => {
     const {theme, setTheme} = useTheme();
     const [isClient, setClient] = useState(false);
+    const router = useRouter();
 
     useEffect(() => {
         setClient(true);
@@ -29,6 +31,19 @@ const Navbar = () => {
     if (!isClient) {
         return null;
     }
+
+    const handleLogout = () => {
+        const logout = async () => {
+            try {
+                await authService.logout();
+
+                router.push("/login");
+            } catch (error) {
+                router.push("/login");
+            }
+        }
+        logout();
+    };
 
     return (
 
@@ -64,8 +79,8 @@ const Navbar = () => {
                         <DropdownMenuSeparator/>
                         <DropdownMenuItem><User className='h-[1.2rem] w-[1.2rem] mr-2'/> Profile</DropdownMenuItem>
                         <DropdownMenuItem><Settings className='h-[1.2rem] w-[1.2rem] mr-2'/> Settings</DropdownMenuItem>
-                        <DropdownMenuItem variant='destructive'><LogOut
-                            className='h-[1.2rem] w-[1.2rem] mr-2'/>Logout</DropdownMenuItem>
+                        <DropdownMenuItem variant='destructive' onClick={() => handleLogout()}>
+                            <LogOut className='h-[1.2rem] w-[1.2rem] mr-2'/>Logout</DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>
 

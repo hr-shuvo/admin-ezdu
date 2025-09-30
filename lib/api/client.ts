@@ -5,22 +5,21 @@ import { showToast } from "@/components/common/toast";
 
 export const httpClient: AxiosInstance = axios.create({
     baseURL: BASE_API_URL,
-    timeout: 10000, // wait maximum 10 seconds
+    timeout: 20000, // wait maximum 20 seconds
     withCredentials: true
 });
 
-
-httpClient.interceptors.request.use(
-    (config) => {
-        // attach auth token if available
-        const token = localStorage.getItem("token");
-        if (token) {
-            config.headers.Authorization = `Bearer ${token}`;
-        }
-        return config;
-    },
-    (error) => Promise.reject(error)
-);
+// httpClient.interceptors.request.use(
+//     (config) => {
+//         // attach auth token if available
+//         const token = localStorage.getItem("token");
+//         if (token) {
+//             config.headers.Authorization = `Bearer ${token}`;
+//         }
+//         return config;
+//     },
+//     (error) => Promise.reject(error)
+// );
 
 httpClient.interceptors.response.use(
     (response: any) => response,
