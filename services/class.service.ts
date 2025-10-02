@@ -2,7 +2,7 @@ import { PaginatedList } from "@/types/pagination";
 import { httpClient } from "@/lib/api/client";
 
 
-const getList = async (page: number, size: number, orderBy?: string, sortBy?: 'asc' | 'desc', search?: string, withDeleted = false): Promise<PaginatedList<any>> => {
+const getList = async (page: number=1, size: number=10, orderBy?: string, sortBy?: 'asc' | 'desc', search?: string, withDeleted = false): Promise<PaginatedList<any>> => {
 
     const params = new URLSearchParams({
         pageNumber: page.toString(),

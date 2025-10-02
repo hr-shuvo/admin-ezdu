@@ -1,0 +1,229 @@
+'use client';
+
+import { ChangeEvent, useEffect, useMemo, useRef, useState } from "react";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Button } from "@/components/ui/button";
+import { Check, ChevronsUpDown, Search } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { useDebounce } from "@/hooks/use-debounce";
+import { Label } from "@/components/ui/label";
+
+type CacheEntry = {
+    data: { items: Item[]; total: number };
+    timestamp: number;
+}
+
+type Item = {
+    id: number;
+    name: string;
+    [key: string]: any;
+}
+
+type Props = {
+    value?: number | null;
+    onValueChange: (value: number | undefined) => void;
+    loadItems: (page: number, size: number, search?: string) => Promise<{ items: Item[], total: number }>;
+    placeholder?: string;
+    searchPlaceholder?: string;
+    emptyText?: string;
+    label?: string;
+    disabled?: boolean;
+    className?: string;
+    itemsPerPage?: number;
+}
+
+const SelectList = ({
+                        value,
+                        onValueChange,
+                        loadItems,
+                        placeholder = "Select an item...",
+                        searchPlaceholder = "Search...",
+                        emptyText = "No item found",
+                        label,
+                        disabled = false,
+                        className = "",
+                        itemsPerPage = 10
+                    }: Props) => {
+    const cacheRef = useRef<Map<string, CacheEntry>>(new Map());
+    const cacheDuration = 60 * 1000; // 1 minute cache
+
+    const [open, setOpen] = useState(false);
+    const [searchQuery, setSearchQuery] = useState('');
+    const debouncedSearchQuery = useDebounce(searchQuery, 500);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [items, setItems] = useState<Item[]>([]);
+    const [totalItems, setTotalItems] = useState(0);
+    const [loading, setLoading] = useState(false);
+    const [selectedItem, setSelectedItem] = useState<Item | null>(null);
+
+    // Generate a cache key based on page and search query
+    const cacheKey = useMemo(() => `${currentPage}-${debouncedSearchQuery}`, [currentPage, debouncedSearchQuery]);
+
+    // Fetch items when open, search changes, or page changes
+    useEffect(() => {
+        const fetchItems = async () => {
+            // check cache first
+            const cached = cacheRef.current.get(cacheKey);
+            if (cached && Date.now() - cached.timestamp < cacheDuration) {
+                setItems(cached.data.items);
+                setTotalItems(cached.data.total);
+                return;
+            }
+
+            // fetch from API
+            setLoading(true);
+            try {
+                const data = await loadItems(currentPage, itemsPerPage, debouncedSearchQuery);
+                setItems(data.items || []);
+                setTotalItems(data.total || 0);
+
+                // store in cache
+                cacheRef.current.set(cacheKey, { data, timestamp: Date.now() });
+            } catch (error) {
+                console.error("Error loading items:", error);
+                setItems([]);
+                setTotalItems(0);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        if (open) fetchItems();
+    }, [cacheKey, currentPage, itemsPerPage, debouncedSearchQuery, open, loadItems]);
+
+    // Load selected item whenever value changes
+    useEffect(() => {
+        const loadSelectedItem = async () => {
+            if (value !== undefined && value !== null) {
+                // check cache
+                for (const [, entry] of cacheRef.current) {
+                    const found = entry.data.items.find(i => i.id === value);
+                    if (found) {
+                        setSelectedItem(found);
+                        return;
+                    }
+                }
+
+                // fetch if not in cache
+                setLoading(true);
+                try {
+                    const data = await loadItems(1, 25, '');
+                    const foundItem = data.items.find(i => i.id === value);
+                    setSelectedItem(foundItem || null);
+                } catch {
+                    setSelectedItem(null);
+                } finally {
+                    setLoading(false);
+                }
+            } else {
+                setSelectedItem(null); // reset placeholder
+            }
+        };
+
+        loadSelectedItem();
+    }, [value, loadItems]);
+
+    const totalPages = Math.ceil(totalItems / itemsPerPage);
+
+    const handleSearchChange = (e: ChangeEvent<HTMLInputElement>) => {
+        setSearchQuery(e.target.value);
+        setCurrentPage(1);
+    };
+
+    const handleSelect = (item: Item) => {
+        const newValue = item.id === value ? undefined : Number(item.id);
+        onValueChange(newValue);
+        setSelectedItem(newValue ? item : null);
+        setOpen(false);
+    };
+
+    return (
+        <div className={`space-y-2 ${className}`}>
+            {label && <Label>{label}</Label>}
+
+            <Popover open={open} onOpenChange={setOpen}>
+                <PopoverTrigger asChild>
+                    <Button
+                        variant="outline"
+                        role="combobox"
+                        aria-expanded={open}
+                        className="w-full justify-between"
+                        disabled={disabled || loading}
+                    >
+                        {loading ? "Loading..." : selectedItem?.name ?? placeholder}
+                        <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50"/>
+                    </Button>
+                </PopoverTrigger>
+
+                <PopoverContent className="w-full p-0" align="start">
+                    <div className="flex flex-col">
+                        {/* Search Input */}
+                        <div className="flex items-center border-b px-3 py-2">
+                            <Search className="mr-2 h-4 w-4 shrink-0 opacity-50"/>
+                            <Input
+                                placeholder={searchPlaceholder}
+                                value={searchQuery}
+                                onChange={handleSearchChange}
+                                className="h-8 border-0 p-0 focus-visible:ring-0 focus-visible:ring-offset-0"
+                            />
+                        </div>
+
+                        {/* Items List */}
+                        <div className="max-h-80 overflow-y-auto p-1">
+                            {loading ? (
+                                <div className="py-6 text-center text-sm text-gray-500">Loading...</div>
+                            ) : items.length > 0 ? (
+                                items.map((item) => (
+                                    <button
+                                        key={item.id}
+                                        onClick={() => handleSelect(item)}
+                                        className="flex w-full items-center rounded-sm px-2 py-2 text-sm outline-none"
+                                    >
+                                        <Check className={`mr-2 h-4 w-4 ${value === item.id ? "opacity-100" : "opacity-0"}`} />
+                                        <div className="flex flex-col items-start">
+                                            <span className="font-medium">{item.name}</span>
+                                            {item.description && (
+                                                <span className="text-xs text-muted-foreground">{item.description}</span>
+                                            )}
+                                        </div>
+                                    </button>
+                                ))
+                            ) : (
+                                <div className="py-6 text-center text-sm text-muted-foreground">{emptyText}</div>
+                            )}
+                        </div>
+
+                        {/* Pagination */}
+                        {!loading && totalItems > itemsPerPage && (
+                            <div className="flex items-center justify-between border-t px-3 py-2">
+                                <div className="text-xs">Page {currentPage} of {totalPages} ({totalItems} total)</div>
+                                <div className="flex gap-1">
+                                    <Button
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={(e) => { e.stopPropagation(); setCurrentPage(p => Math.max(1, p - 1)) }}
+                                        disabled={currentPage === 1}
+                                        className="h-7 px-2 text-xs"
+                                    >
+                                        Previous
+                                    </Button>
+                                    <Button
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={(e) => { e.stopPropagation(); setCurrentPage(p => Math.min(totalPages, p + 1)) }}
+                                        disabled={currentPage === totalPages}
+                                        className="h-7 px-2 text-xs"
+                                    >
+                                        Next
+                                    </Button>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                </PopoverContent>
+            </Popover>
+        </div>
+    );
+}
+
+export default SelectList;

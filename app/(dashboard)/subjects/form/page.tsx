@@ -2,7 +2,7 @@
 
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { classSchema } from "@/schemas/classSchema";
+import { subjectSchema } from "@/schemas/subjectSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -15,61 +15,64 @@ import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, For
 import { classService } from "@/services/class.service";
 import { showToast } from "@/components/common/toast";
 import { enums } from "@/lib/constants/common";
-import { useParams, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
+import { subjectService } from "@/services/subject.service";
+import SelectList from "@/components/common/select-list";
 
 
-const ClassEditPage = () => {
-    const params = useParams();
+const SubjectCreatePage = () => {
     const router = useRouter();
     const [isLoading, setLoading] = useState(false);
+    const [classId, setClassId] = useState<number>();
+    const [classes, setClasses] = useState<any[]>([]);
 
-    const form = useForm<z.infer<typeof classSchema>>({
-        resolver: zodResolver(classSchema),
+    const form = useForm<z.infer<typeof subjectSchema>>({
+        resolver: zodResolver(subjectSchema),
         defaultValues: {
             name: '',
+            subTitle: '',
+            code: '',
+            classId: undefined,
             status: 0,
             segment: undefined,
-            groups: []
+            groups: [],
         }
     });
 
     useEffect(() => {
-        async function loadData() {
-            setLoading(true);
-            try {
-                if (params.id) {
-                    const classId = Number(params.id);
-                    const data = await classService.get(classId);
+        loadClasses(1, 10);
+    }, [])
 
-                    data.segment = data.segment ? Number(data.segment) : undefined;
-                    data.groups = data.groups.split(',').map((group: string) => group.trim()).filter(Boolean);
-
-                    form.reset(data)
-
-                    console.log(data)
-                }
-            } catch (error) {
-                // showToast("Failed to load class data.", "error");
-            } finally {
-                setLoading(false);
-            }
-        }
-        
-        loadData();
-    }, [params.id]);
-
-
-
-    const onSubmit = async (values: z.infer<typeof classSchema>) => {
+    const onSubmit = async (values: z.infer<typeof subjectSchema>) => {
         setLoading(true);
 
+        console.log(values);
+
+        setLoading(false);
+        return;
+
         try {
-            const result = await classService.save(values);
+            const result = await subjectService.save(values);
+            form.reset();
             showToast(result.message, "success");
         } finally {
             setLoading(false);
         }
     }
+
+    const loadClasses = async (page: number, limit: number, search?: string | undefined): Promise<any> => {
+        try {
+            const result = await classService.getList(page, limit, undefined, undefined, search);
+            // console.log(result.items);
+            setClasses(result.items);
+
+            return {items: result.items, total: result.totalCount};
+
+        } catch (error) {
+            console.log(error);
+        }
+
+    };
 
     return (
 
@@ -77,9 +80,9 @@ const ClassEditPage = () => {
             <div className="mx-auto grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <Card className="lg:col-span-2">
                     <CardHeader>
-                        <CardTitle className="text-2xl">Create Academic Class</CardTitle>
+                        <CardTitle className="text-2xl">Create Subject</CardTitle>
                         <CardDescription>
-                            Add a new class to the academic system
+                            Add a new subject to the classes database
                         </CardDescription>
                     </CardHeader>
                     <CardContent>
@@ -92,12 +95,12 @@ const ClassEditPage = () => {
                                         <div className="md:col-span-4">
                                             <FormField name="name" control={form.control} render={({field}) => (
                                                 <FormItem>
-                                                    <FormLabel>Class name *</FormLabel>
+                                                    <FormLabel>Subject name *</FormLabel>
                                                     <FormControl>
                                                         <Input
                                                             {...field}
                                                             type="text"
-                                                            placeholder="e.g., Mathematics 101"
+                                                            placeholder="e.g., Mathematics 1"
                                                             disabled={isLoading}
                                                         />
                                                     </FormControl>
@@ -105,6 +108,67 @@ const ClassEditPage = () => {
                                                     <FormMessage/>
                                                 </FormItem>
                                             )}/>
+                                        </div>
+
+                                        <div className="md:col-span-4">
+                                            <FormField name="subTitle" control={form.control} render={({field}) => (
+                                                <FormItem>
+                                                    <FormLabel>Subject Subtitle</FormLabel>
+                                                    <FormControl>
+                                                        <Input
+                                                            {...field}
+                                                            type="text"
+                                                            placeholder="e.g., Mathematics 1"
+                                                            disabled={isLoading}
+                                                        />
+                                                    </FormControl>
+
+                                                    <FormMessage/>
+                                                </FormItem>
+                                            )}/>
+                                        </div>
+
+                                        <div className="md:col-span-2">
+                                            <FormField name="code" control={form.control} render={({field}) => (
+                                                <FormItem>
+                                                    <FormLabel>Subject Code</FormLabel>
+                                                    <FormControl>
+                                                        <Input
+                                                            {...field}
+                                                            type="text"
+                                                            placeholder="e.g., math-1"
+                                                            disabled={isLoading}
+                                                        />
+                                                    </FormControl>
+
+                                                    <FormMessage/>
+                                                </FormItem>
+                                            )}/>
+                                        </div>
+
+                                        <div className="md:col-span-2">
+                                            <FormField
+                                                name="classId"
+                                                control={form.control}
+                                                render={({ field }) => (
+                                                    <FormItem>
+                                                        <FormLabel>Class *</FormLabel>
+                                                        <FormControl>
+                                                            <SelectList
+                                                                value={field.value}
+                                                                onValueChange={(val) => {
+                                                                    field.onChange(val);
+                                                                    setClassId(val);
+                                                                }} // updates the form automatically
+                                                                loadItems={loadClasses}
+                                                                placeholder="Select a class..."
+                                                            />
+                                                        </FormControl>
+                                                        <FormMessage />
+                                                    </FormItem>
+                                                )}
+                                            />
+
                                         </div>
 
                                         <div className="md:col-span-2">
@@ -216,7 +280,6 @@ const ClassEditPage = () => {
                                                                                                 type="button"
                                                                                                 onClick={() => toggleGroup(groupId)}
                                                                                                 className="ml-1 text-red-500 hover:text-red-700 cursor-pointer"
-                                                                                                disabled={isLoading}
                                                                                             >
                                                                                                 ×
                                                                                             </button>
@@ -247,7 +310,6 @@ const ClassEditPage = () => {
                                                                                 size="sm"
                                                                                 onClick={() => toggleGroup(group.value)}
                                                                                 className="w-full"
-                                                                                disabled={isLoading}
                                                                             >
                                                                                 {group.name}
                                                                             </Button>
@@ -277,10 +339,10 @@ const ClassEditPage = () => {
                                                     {isLoading ? (
                                                         <>
                                                             <Loader2 className="mr-2 h-4 w-4 animate-spin"/>
-                                                            Updating...
+                                                            Creating...
                                                         </>
                                                     ) : (
-                                                        'Update Class'
+                                                        'Create Class'
                                                     )}
                                                 </Button>
                                                 <Button
@@ -340,4 +402,4 @@ const ClassEditPage = () => {
 
 }
 
-export default ClassEditPage;
+export default SubjectCreatePage;
