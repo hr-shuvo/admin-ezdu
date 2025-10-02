@@ -11,6 +11,6 @@ export const classSchema = z.object({
         z.literal(-1),
         z.literal(-404)
     ]),
-    segmentId: z.number().min(1, { message: "Segment is required" }),
+    segment: z.number().min(1, { message: "Segment is required" }),
     groups: z.array(z.string()).optional()
 });

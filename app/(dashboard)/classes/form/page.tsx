@@ -27,13 +27,15 @@ const ClassCreatePage = () => {
         defaultValues: {
             name: '',
             status: 0,
-            segmentId: undefined,
+            segment: undefined,
             groups: []
         }
     });
 
     const onSubmit = async (values: z.infer<typeof classSchema>) => {
         setLoading(true);
+
+        console.log(values);
 
         try {
             const result = await classService.save(values);
@@ -82,7 +84,7 @@ const ClassCreatePage = () => {
 
                                         <div className="md:col-span-2">
                                             <FormField
-                                                name="segmentId"
+                                                name="segment"
                                                 control={form.control}
                                                 render={({field}) => (
                                                     <FormItem>

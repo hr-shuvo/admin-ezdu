@@ -19,6 +19,7 @@ import { useTransition } from "react";
 import { classService } from "@/services/class.service";
 import { showToast } from "@/components/common/toast";
 import { cn } from "@/lib/utils";
+import { enums } from "@/lib/constants/common";
 
 
 export const classColumns = (refreshData: () => void): ColumnDef<any>[] => [
@@ -54,13 +55,14 @@ export const classColumns = (refreshData: () => void): ColumnDef<any>[] => [
     },
     {
         accessorKey: 'name',
+        size:250,
         header: ({column}) => {
             return (
                 <Button
                     variant="ghost"
                     onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
                 >
-                    Username
+                    Name
                     <ArrowUpDown className="ml-2 h-4 w-4"/>
                 </Button>
             )
@@ -80,67 +82,93 @@ export const classColumns = (refreshData: () => void): ColumnDef<any>[] => [
         }
     },
     {
+        accessorKey: 'segment',
+        header: "Segment",
+        cell: ({getValue}) => {
+            const value = getValue() as number;
+            const segment = value ?  enums.availableSegments.find(s => s.value == value) : null;
+
+            const segmentText = segment ? segment.name : "-";
+
+            return (<div>{segmentText}</div>);
+        }
+
+    },
+    {
         accessorKey: 'updatedAt',
-        header: ({column}) => {
-            return (
+        header: ({ column }) => (
+            <div className="flex justify-center items-center">
                 <Button
                     variant="ghost"
                     onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+                    className="flex items-center justify-center"
                 >
-                    UpdatedAt
-                    <ArrowUpDown className="ml-2 h-4 w-4"/>
+                    Modified At
+                    <ArrowUpDown className="ml-2 h-4 w-4" />
                 </Button>
-            )
-        },
-        cell: ({getValue}) => {
-            const date = new Date(getValue<string>());
-
-            const formattedDate = formatDateTime(date, "dd MMM yyyy, HH:mm");
-
+            </div>
+        ),
+        cell: ({ getValue }) => {
+            const formattedDate = formatDateTime(getValue<string>());
             return (
-                <div>{formattedDate}</div>
-            )
+                <div className="flex justify-center items-center">
+                    {formattedDate}
+                </div>
+            );
         }
+
     },
     {
         accessorKey: 'createdAt',
-        header: ({column}) => {
-            return (
+        header: ({ column }) => (
+            <div className="flex justify-center items-center">
                 <Button
                     variant="ghost"
                     onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+                    className="flex items-center justify-center"
                 >
-                    CreatedAt
-                    <ArrowUpDown className="ml-2 h-4 w-4"/>
+                    Created At
+                    <ArrowUpDown className="ml-2 h-4 w-4" />
                 </Button>
-            )
-        },
-        cell: ({getValue}) => {
-            const date = new Date(getValue<string>());
-
-            const formattedDate = formatDateTime(date, "dd MMM yyyy, HH:mm");
-
+            </div>
+        ),
+        cell: ({ getValue }) => {
+            const formattedDate = formatDateTime(getValue<string>());
             return (
-                <div>{formattedDate}</div>
-            )
+                <div className="flex justify-center items-center">
+                    {formattedDate}
+                </div>
+            );
         }
+
     },
     {
         accessorKey: "status",
-        header: "Status",
-        cell: ({row}) => {
+        size:20,
+        header: () => (
+            <div className="flex justify-center items-center">Status</div>
+        ),
+        cell: ({ row }) => {
             const status = (row.getValue("status") ?? 0) as EntityStatus;
 
             return (
-                <Badge className={StatusMap[status].color} variant="outline">
-                    {StatusMap[status].text}
-                </Badge>
-            )
+                <div className="flex justify-center items-center">
+                    <Badge className={`${StatusMap[status].color}`} variant="outline">
+                        {StatusMap[status].text}
+                    </Badge>
+                </div>
+            );
         }
+
     },
     {
         id: "actions",
-        cell: ({row}) => <ActionCell data={row.original} refreshData={refreshData}/>
+        cell: ({ row }) => (
+            <div className="flex justify-center items-center">
+                <ActionCell data={row.original} refreshData={refreshData} />
+            </div>
+        )
+
     }
 
 ];
