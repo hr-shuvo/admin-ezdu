@@ -7,9 +7,11 @@ import { Input } from "@/components/ui/input";
 import { useDebounce } from "@/hooks/use-debounce";
 import { classService } from "@/services/class.service";
 import { Pagination, Sorting } from "@/lib/constants/pagination";
-import { Select, SelectContent, SelectItem, SelectTrigger } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import Link from "next/link";
 
 
 const ClassesPage = () => {
@@ -67,52 +69,66 @@ const ClassesPage = () => {
 
 
     return (
-        <div className=''>
-            <div className='mb-8 px-4 py-2 bg-secondary rounded-md'>
-                <h1 className='font-semibold'>All Class</h1>
-            </div>
+        <Card className=''>
+            <CardHeader>
+                <CardTitle>
+                    <div className='rounded-md flex items-center justify-between'>
+                        <h1 className='font-semibold'>All Class</h1>
 
-            <div className='mb-4 flex items-center gap-2'>
-                <Input
-                    placeholder="Search classes..."
-                    value={searchQuery}
-                    onChange={(e) => handleSearchChange(e.target.value)}
-                    className="max-w-sm"
-                />
+                        <Link href={'./classes/form'}>
+                            <Button>Add New</Button>
+                        </Link>
+                    </div>
 
-                <div className="flex items-center space-x-2">
-                    <Switch
-                        id="toggle-mode"
-                        checked={withDeleted}
-                        onCheckedChange={(checked) => setWithDeleted(checked)}
+                </CardTitle>
+
+                {/*<Separator className='my-2'/>*/}
+
+                <div className='mb-4 mt-2 flex items-center gap-2'>
+                    <Input
+                        placeholder="Search classes..."
+                        value={searchQuery}
+                        onChange={(e) => handleSearchChange(e.target.value)}
+                        className="max-w-sm"
                     />
-                    <Label htmlFor="toggle-mode">With Deleted</Label>
+
+                    <div className="flex items-center space-x-2">
+                        <Switch
+                            id="toggle-mode"
+                            checked={withDeleted}
+                            onCheckedChange={(checked) => setWithDeleted(checked)}
+                        />
+                        <Label htmlFor="toggle-mode">With Deleted</Label>
+                    </div>
+
+
                 </div>
+            </CardHeader>
+
+            <CardContent>
+                <DataTable
+                    columns={classColumns(refreshData)}
+                    data={data}
+                    loading={isPending}
+                    pagination={{
+                        pageNumber: pagination.pageNumber - 1, // TanStack uses 0-based indexing
+                        pageSize: pagination.pageSize,
+                        totalPage: pagination.totalPage,
+                        totalCount: pagination.totalCount,
+                    }}
+                    onPaginationChange={({pageNumber, pageSize}) => {
+                        if (pageSize !== pagination.pageSize) {
+                            handlePageSizeChange(pageSize);
+                        } else if (pageNumber + 1 !== pagination.pageNumber) {
+                            handlePageChange(pageNumber + 1);
+                        }
+                    }}
+                    onSortingChange={handleSortingChange}
+                />
+            </CardContent>
 
 
-            </div>
-
-            <DataTable
-                columns={classColumns(refreshData)}
-                data={data}
-                loading={isPending}
-                pagination={{
-                    pageNumber: pagination.pageNumber - 1, // TanStack uses 0-based indexing
-                    pageSize: pagination.pageSize,
-                    totalPage: pagination.totalPage,
-                    totalCount: pagination.totalCount,
-                }}
-                onPaginationChange={({pageNumber, pageSize}) => {
-                    if (pageSize !== pagination.pageSize) {
-                        handlePageSizeChange(pageSize);
-                    } else if (pageNumber + 1 !== pagination.pageNumber) {
-                        handlePageChange(pageNumber + 1);
-                    }
-                }}
-                onSortingChange={handleSortingChange}
-            />
-
-        </div>
+        </Card>
     )
 
 
