@@ -11,10 +11,10 @@ export const subjectSchema = z.object({
         z.literal(-1),
         z.literal(-404)
     ]),
-    segment: z.number().min(1, {message: "Segment is required"}),
+    segment: z.number({error: "Segment is required"}).min(1, {message: "Segment is required"}),
     groups: z.array(z.string()).optional(),
     subTitle: z.string().optional(),
-    code: z.string().optional(),
+    code: z.string().min(1, {message: "Class name is required"}),
     classId: z.number({error: "Class is required"}).min(1, {message: "Class is required"}),
 
 });

@@ -23,8 +23,6 @@ import SelectList from "@/components/common/select-list";
 const SubjectCreatePage = () => {
     const router = useRouter();
     const [isLoading, setLoading] = useState(false);
-    const [classId, setClassId] = useState<number>();
-    const [classes, setClasses] = useState<any[]>([]);
 
     const form = useForm<z.infer<typeof subjectSchema>>({
         resolver: zodResolver(subjectSchema),
@@ -48,8 +46,8 @@ const SubjectCreatePage = () => {
 
         console.log(values);
 
-        setLoading(false);
-        return;
+        // setLoading(false);
+        // return;
 
         try {
             const result = await subjectService.save(values);
@@ -64,7 +62,7 @@ const SubjectCreatePage = () => {
         try {
             const result = await classService.getList(page, limit, undefined, undefined, search);
             // console.log(result.items);
-            setClasses(result.items);
+            // setClasses(result.items);
 
             return {items: result.items, total: result.totalCount};
 
@@ -158,10 +156,10 @@ const SubjectCreatePage = () => {
                                                                 value={field.value}
                                                                 onValueChange={(val) => {
                                                                     field.onChange(val);
-                                                                    setClassId(val);
                                                                 }} // updates the form automatically
                                                                 loadItems={loadClasses}
-                                                                placeholder="Select a class..."
+                                                                // placeholder="Select a class..."
+                                                                className="w-full"
                                                             />
                                                         </FormControl>
                                                         <FormMessage />

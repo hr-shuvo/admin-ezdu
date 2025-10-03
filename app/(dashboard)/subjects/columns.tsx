@@ -93,9 +93,7 @@ export const subjectColumns = (refreshData: () => void): ColumnDef<any>[] => [
             )
         },
         cell: ({getValue}) => {
-            const date = new Date(getValue<string>());
-
-            const formattedDate = formatDateTime(date, "dd MMM yyyy, HH:mm");
+            const formattedDate = formatDateTime(getValue<string>());
 
             return (
                 <div>{formattedDate}</div>
@@ -116,9 +114,7 @@ export const subjectColumns = (refreshData: () => void): ColumnDef<any>[] => [
             )
         },
         cell: ({getValue}) => {
-            const date = new Date(getValue<string>());
-
-            const formattedDate = formatDateTime(date, "dd MMM yyyy, HH:mm");
+            const formattedDate = formatDateTime(getValue<string>());
 
             return (
                 <div>{formattedDate}</div>

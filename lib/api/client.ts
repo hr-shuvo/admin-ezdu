@@ -5,7 +5,7 @@ import { showToast } from "@/components/common/toast";
 
 export const httpClient: AxiosInstance = axios.create({
     baseURL: BASE_API_URL,
-    timeout: 20000, // wait maximum 20 seconds
+    // timeout: 20000, // wait maximum 20 seconds
     withCredentials: true
 });
 
