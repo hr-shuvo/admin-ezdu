@@ -214,46 +214,33 @@ const ClassDetailsPage = () => {
                         <CardDescription>Timestamps and user information</CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-4">
-                        <div>
-                            <Label className="flex items-center gap-2">
-                                <Calendar className="w-4 h-4"/>
-                                Created At
-                            </Label>
-                            <p className="mt-2">{formatDateTime(data.createdAt)}</p>
+                        <div className="flex items-start gap-3">
+                            <Calendar className="h-5 w-5 text-muted-foreground mt-0.5"/>
+                            <div>
+                                <p className="text-sm font-medium">Created At</p>
+                                <p className="text-sm text-muted-foreground">{formatDateTime(data.createdAt)}</p>
+                            </div>
                         </div>
-
-                        <Separator/>
-
-                        <div>
-                            <Label className="flex items-center gap-2">
-                                <Clock className="w-4 h-4"/>
-                                Last Updated
-                            </Label>
-                            <p className=" mt-2">{formatDateTime(data.updatedAt)}</p>
+                        <div className="flex items-start gap-3">
+                            <Clock className="h-5 w-5 text-muted-foreground mt-0.5"/>
+                            <div>
+                                <p className="text-sm font-medium">Last Updated</p>
+                                <p className="text-sm text-muted-foreground">{formatDateTime(data.updatedAt)}</p>
+                            </div>
                         </div>
-
-                        <Separator/>
-
-                        <div>
-                            <Label className="flex items-center gap-2">
-                                <User className="w-4 h-4"/>
-                                Created By
-                            </Label>
-                            <p className="mt-2">
-                                {data.createdBy ? `User #${data.createdBy}` : 'System'}
-                            </p>
+                        <div className="flex items-start gap-3">
+                            <User className="h-5 w-5 text-muted-foreground mt-0.5"/>
+                            <div>
+                                <p className="text-sm font-medium">Created By</p>
+                                <p className="text-sm text-muted-foreground">{data.createdBy || 'System'}</p>
+                            </div>
                         </div>
-
-                        <Separator/>
-
-                        <div>
-                            <Label className="flex items-center gap-2">
-                                <User className="w-4 h-4"/>
-                                Updated By
-                            </Label>
-                            <p className="mt-2">
-                                {data.updatedBy ? `User #${data.updatedBy}` : 'N/A'}
-                            </p>
+                        <div className="flex items-start gap-3">
+                            <User className="h-5 w-5 text-muted-foreground"/>
+                            <div>
+                                <p className="text-sm font-medium">Last Updated By</p>
+                                <p className="text-sm text-muted-foreground">{data.updatedBy || 'System'}</p>
+                            </div>
                         </div>
                     </CardContent>
                 </Card>

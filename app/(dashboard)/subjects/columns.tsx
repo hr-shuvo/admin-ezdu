@@ -215,14 +215,14 @@ const ActionCell = ({data, refreshData}: { data: any, refreshData: () => void })
 
                 <DropdownMenuItem disabled={isPending}
                                   className="text-blue-500 hover:bg-blue-100 flex items-center gap-2"
-                                  onClick={() => router.push(`./classes/${data.id}`)}>
+                                  onClick={() => router.push(`./subjects/${data.id}`)}>
                     <Eye className="w-4 h-4 text-blue-500 hover:bg-blue-100"/>
                     View
                 </DropdownMenuItem>
 
                 <DropdownMenuItem disabled={isPending}
                                   className="text-green-500 hover:bg-green-100 flex items-center gap-2"
-                                  onClick={() => router.push(`./classes/form/${data.id}`)}>
+                                  onClick={() => router.push(`./subjects/form/${data.id}`)}>
                     <Edit className="w-4 h-4 text-green-500 hover:bg-green-100 "/>
                     Edit
                 </DropdownMenuItem>

@@ -34,7 +34,12 @@ const Breadcrumbs: FC<BreadcrumbProps> = ({basePath = "/", nameMap = {}}) => {
                 name = "Create";
             }
         } else if (/^\d+$/.test(seg)) {
-            name = "Details";
+            const prevSeg = segments[idx - 1];
+            if (prevSeg === "form") {
+                return null;
+            } else {
+                name = "Details";
+            }
         } else {
             name = seg.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
         }
