@@ -32,7 +32,7 @@ const ClassesPage = () => {
 
         startTransition(async () => {
             const result = await classService.getList(pagination.pageNumber, pagination.pageSize, sorting.orderBy, sorting.sortBy, debouncedSearchQuery, debouncedWithDeleted);
-            // console.log(result);
+            console.log(result);
             setData(result.items);
 
             setPagination({

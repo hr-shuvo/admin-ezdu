@@ -34,8 +34,7 @@ const Breadcrumbs: FC<BreadcrumbProps> = ({basePath = "/", nameMap = {}}) => {
                 name = "Create";
             }
         } else if (/^\d+$/.test(seg)) {
-            // Skip numeric IDs in breadcrumb
-            return null;
+            name = "Details";
         } else {
             name = seg.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
         }

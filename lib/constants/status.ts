@@ -6,7 +6,7 @@ const entityStatus = {
 
 export type EntityStatus = typeof entityStatus[keyof typeof entityStatus];
 
-export const StatusMap: Record<EntityStatus, { text: string; color: string }> = {
+export const StatusMap: Record<EntityStatus | number, { text: string; color: string }> = {
     [0]: {text: "Active", color: "bg-green-500/40"},
     [-1]: {text: "Inactive", color: "bg-yellow-500/40"},
     [-404]: {text: "Deleted", color: "bg-red-500/40"},

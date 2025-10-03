@@ -19,6 +19,7 @@ import { useTransition } from "react";
 import { showToast } from "@/components/common/toast";
 import { cn } from "@/lib/utils";
 import { subjectService } from "@/services/subject.service";
+import { enums } from "@/lib/constants/common";
 
 
 export const subjectColumns = (refreshData: () => void): ColumnDef<any>[] => [
@@ -77,6 +78,18 @@ export const subjectColumns = (refreshData: () => void): ColumnDef<any>[] => [
             ) : (
                 <div>-</div>
             );
+        }
+    },
+    {
+        accessorKey: 'segment',
+        header: "Segment",
+        cell: ({getValue}) => {
+            const value = getValue() as number;
+            const segment = value ?  enums.availableSegments.find(s => s.value == value) : null;
+
+            const segmentText = segment ? segment.name : "-";
+
+            return (<div>{segmentText}</div>);
         }
     },
     {
