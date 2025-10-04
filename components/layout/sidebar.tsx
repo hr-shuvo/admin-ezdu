@@ -165,6 +165,7 @@ const AppSidebar = () => {
 
                 </Collapsible>
 
+
                 <Collapsible defaultOpen={true} className='group/collapsible'>
 
                     <SidebarGroup>
@@ -177,16 +178,43 @@ const AppSidebar = () => {
                         </SidebarGroupLabel>
 
                         <CollapsibleContent>
+
                             <SidebarGroupContent>
                                 <SidebarMenu>
                                     <SidebarMenuItem>
                                         <SidebarMenuButton asChild>
-                                            <Link href='/public'><Projector/> See All Users</Link>
+                                            <Link href='/users' aria-readonly='true'><Projector/> Users</Link>
                                         </SidebarMenuButton>
+                                        <SidebarMenuSub>
+                                            <SidebarMenuSubItem>
+                                                <SidebarMenuSubButton asChild>
+                                                    <Link href='/users'><Plus/>All Users</Link>
+
+                                                </SidebarMenuSubButton>
+                                            </SidebarMenuSubItem>
+                                            <SidebarMenuSubItem>
+                                                <SidebarMenuSubButton asChild>
+                                                    <Link href='/users/add'><Plus/> Add / Invite User</Link>
+                                                </SidebarMenuSubButton>
+                                            </SidebarMenuSubItem>
+                                            <SidebarMenuSubItem>
+                                                <SidebarMenuSubButton asChild>
+                                                    <Link href='/users/suspended'><Plus/> Suspended User</Link>
+                                                </SidebarMenuSubButton>
+                                            </SidebarMenuSubItem>
+                                        </SidebarMenuSub>
                                     </SidebarMenuItem>
+
                                     <SidebarMenuItem>
                                         <SidebarMenuButton asChild>
-                                            <Link href='/public'><Plus/> Manage users</Link>
+                                            <Link href='/users/parmission'><Projector/> Roles & Permissions</Link>
+                                        </SidebarMenuButton>
+                                    </SidebarMenuItem>
+
+
+                                    <SidebarMenuItem>
+                                        <SidebarMenuButton asChild>
+                                            <Link href='/'><Projector/>Session / Login Activity</Link>
                                         </SidebarMenuButton>
                                     </SidebarMenuItem>
                                 </SidebarMenu>
@@ -195,13 +223,7 @@ const AppSidebar = () => {
                         </CollapsibleContent>
 
                     </SidebarGroup>
-
                 </Collapsible>
-
-
-
-
-
 
             </SidebarContent>
 

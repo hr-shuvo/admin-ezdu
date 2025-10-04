@@ -13,11 +13,12 @@ const availableGroups: { value: string, name: string }[] = [
 
 const availableSegments: { value: number, name: string }[] = [
     {value: 1, name:"Primary"},
-    {value: 2, name:"Secondary"},
-    {value: 3, name:"Higher Secondary"},
-    {value: 4, name:"Admission"},
-    {value: 5, name:"Job Placement"},
-    {value: 6, name:"Other"},
+    {value: 2, name:"Junior"},
+    {value: 3, name:"Secondary"},
+    {value: 4, name:"Higher Secondary"},
+    {value: 5, name:"Admission"},
+    {value: 6, name:"Job Placement"},
+    {value: 7, name:"Other"},
 ];
 
 
