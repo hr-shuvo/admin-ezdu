@@ -12,6 +12,9 @@ import { lessonColumns } from "@/app/(dashboard)/lessons/columns";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { classService } from "@/services/class.service";
+import SelectList from "@/components/common/select-list";
+import { subjectService } from "@/services/subject.service";
 
 
 const LessonsPage = () => {
@@ -27,11 +30,14 @@ const LessonsPage = () => {
     const [withDeleted, setWithDeleted] = useState<boolean>(false);
     const debouncedWithDeleted = useDebounce(withDeleted, 500);
 
+    const [classId, setClassId] = useState<number>();
+    const [subjectId, setSubjectId] = useState<number>();
+    const debouncedSubjectId = useDebounce(subjectId, 500);
+
 
     useEffect(() => {
-
         startTransition(async () => {
-            const result = await lessonService.getList(pagination.pageNumber, pagination.pageSize, sorting.orderBy, sorting.sortBy, debouncedSearchQuery, debouncedWithDeleted);
+            const result = await lessonService.getList(pagination.pageNumber, pagination.pageSize, sorting.orderBy, sorting.sortBy, debouncedSearchQuery, debouncedWithDeleted, debouncedSubjectId);
             // console.log(result.items);
             setData(result.items);
 
@@ -43,7 +49,40 @@ const LessonsPage = () => {
             });
         })
 
-    }, [pagination.pageNumber, pagination.pageSize, sorting.sortBy, sorting.orderBy, debouncedSearchQuery, refresh, debouncedWithDeleted]);
+    }, [pagination.pageNumber, pagination.pageSize, sorting.sortBy, sorting.orderBy, debouncedSearchQuery, refresh, debouncedWithDeleted, debouncedSubjectId]);
+
+    useEffect(() => {
+        loadClasses(1, 10);
+    }, []);
+
+    const loadClasses = async (page: number, limit: number, search?: string | undefined): Promise<any> => {
+        try {
+            const result = await classService.getList(page, limit, undefined, undefined, search);
+            // console.log(result.items);
+            // setClasses(result.items);
+
+            return {items: result.items, total: result.totalCount};
+
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
+    const loadSubjects = async (page: number, limit: number, search?: string | undefined): Promise<any> => {
+        if (!classId) return {items: [], total: 0};
+
+        try {
+            const result = await subjectService.getList(page, limit, undefined, undefined, search, undefined, classId);
+            // console.log('subjects: ', result.items);
+            // setClasses(result.items);
+
+            return {items: result.items, total: result.totalCount};
+
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
 
     function refreshData() {
         setRefresh(!refresh);
@@ -82,7 +121,7 @@ const LessonsPage = () => {
 
                 </CardTitle>
 
-                <div className='mb-4 mt-2 flex items-center gap-2'>
+                <div className='mb-4 mt-2 flex items-center gap-4'>
                     <Input
                         placeholder="Search lessons..."
                         value={searchQuery}
@@ -97,6 +136,33 @@ const LessonsPage = () => {
                             onCheckedChange={(checked) => setWithDeleted(checked)}
                         />
                         <Label htmlFor="toggle-mode">With Deleted</Label>
+                    </div>
+
+                    <div>
+                        <SelectList
+                            value={classId}
+                            onValueChange={(val) => {
+                                setClassId(Number(val));
+                                setSubjectId(0);
+                            }}
+                            loadItems={loadClasses}
+                            placeholder="Select Class"
+                            className="w-full"
+                        />
+                    </div>
+
+                    <div>
+                        <SelectList
+                            key={classId}
+                            value={subjectId}
+                            onValueChange={(val) => {
+                                setSubjectId(Number(val));
+                            }}
+                            loadItems={loadSubjects}
+                            placeholder="Select Subject"
+                            emptyText={classId ? "No subjects found." : "Select class first"}
+                            className="w-full"
+                        />
                     </div>
 
 
