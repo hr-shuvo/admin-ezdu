@@ -3,7 +3,7 @@
 import { ChangeEvent, useEffect, useMemo, useRef, useState } from "react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
-import { Check, ChevronsUpDown, Search } from "lucide-react";
+import { Check, ChevronLeft, ChevronRight, ChevronsUpDown, Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { useDebounce } from "@/hooks/use-debounce";
 import { Label } from "@/components/ui/label";
@@ -208,7 +208,8 @@ const SelectList = ({
                         {/* Pagination */}
                         {!loading && totalItems > itemsPerPage && (
                             <div className="flex items-center justify-between border-t px-3 py-2">
-                                <div className="text-xs">Page {currentPage} of {totalPages} ({totalItems} total)</div>
+                                {/*<div className="text-xs">Page {currentPage} of {totalPages} ({totalItems} total)</div>*/}
+                                <div className="text-xs">Page {currentPage} of {totalPages}</div>
                                 <div className="flex gap-1">
                                     <Button
                                         variant="outline"
@@ -220,7 +221,7 @@ const SelectList = ({
                                         disabled={currentPage === 1}
                                         className="h-7 px-2 text-xs"
                                     >
-                                        Previous
+                                        <ChevronLeft className="w-4 h-4" />
                                     </Button>
                                     <Button
                                         variant="outline"
@@ -232,7 +233,7 @@ const SelectList = ({
                                         disabled={currentPage === totalPages}
                                         className="h-7 px-2 text-xs"
                                     >
-                                        Next
+                                        <ChevronRight className="w-4 h-4" />
                                     </Button>
                                 </div>
                             </div>

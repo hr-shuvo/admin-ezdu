@@ -60,12 +60,13 @@ export const lessonColumns = (refreshData: () => void): ColumnDef<any>[] => [
                     variant="ghost"
                     onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
                 >
-                    Username
+                    Name
                     <ArrowUpDown className="ml-2 h-4 w-4"/>
                 </Button>
             )
         }
     },
+    {accessorKey: 'subTitle', header: 'Subtitle'},
     {
         accessorKey: 'groups',
         header: "Groups",
@@ -80,50 +81,33 @@ export const lessonColumns = (refreshData: () => void): ColumnDef<any>[] => [
         }
     },
     {
-        accessorKey: 'updatedAt',
-        header: ({column}) => {
+        id: 'updatedAt',
+        header: ({column}) => (
+            <Button
+                variant="ghost"
+                onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+            >
+                ModifiedAt
+                <ArrowUpDown className="ml-2 h-4 w-4"/>
+            </Button>
+        ),
+        cell: ({row}) => {
+            const formattedUpdated = formatDateTime(row.original.updatedAt);
+            const formattedCreated = formatDateTime(row.original.createdAt);
+
             return (
-                <Button
-                    variant="ghost"
-                    onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-                >
-                    UpdatedAt
-                    <ArrowUpDown className="ml-2 h-4 w-4"/>
-                </Button>
-            )
+                <div className="flex flex-col">
+                    <span className="font-medium">{formattedUpdated}</span>
+                    {
+                        row.original.updatedAt !== row.original.createdAt && (
+                            <span className="text-xs text-muted-foreground"> Created: {formattedCreated}</span>
+                        )
+                    }
+                </div>
+            );
         },
-        cell: ({getValue}) => {
-            const date = new Date(getValue<string>());
-
-            const formattedDate = formatDateTime(date, "dd MMM yyyy, HH:mm");
-
-            return (
-                <div>{formattedDate}</div>
-            )
-        }
-    },
-    {
-        accessorKey: 'createdAt',
-        header: ({column}) => {
-            return (
-                <Button
-                    variant="ghost"
-                    onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-                >
-                    CreatedAt
-                    <ArrowUpDown className="ml-2 h-4 w-4"/>
-                </Button>
-            )
-        },
-        cell: ({getValue}) => {
-            const date = new Date(getValue<string>());
-
-            const formattedDate = formatDateTime(date, "dd MMM yyyy, HH:mm");
-
-            return (
-                <div>{formattedDate}</div>
-            )
-        }
+        sortingFn: (a, b) =>
+            new Date(a.original.updatedAt).getTime() - new Date(b.original.updatedAt).getTime(),
     },
     {
         accessorKey: "status",
@@ -206,14 +190,14 @@ const ActionCell = ({data, refreshData}: { data: any, refreshData: () => void })
 
                 <DropdownMenuItem disabled={isPending}
                                   className="text-blue-500 hover:bg-blue-100 flex items-center gap-2"
-                                  onClick={() => router.push(`./classes/${data.id}`)}>
+                                  onClick={() => router.push(`./lessons/${data.id}`)}>
                     <Eye className="w-4 h-4 text-blue-500 hover:bg-blue-100"/>
                     View
                 </DropdownMenuItem>
 
                 <DropdownMenuItem disabled={isPending}
                                   className="text-green-500 hover:bg-green-100 flex items-center gap-2"
-                                  onClick={() => router.push(`./classes/form/${data.id}`)}>
+                                  onClick={() => router.push(`./lessons/form/${data.id}`)}>
                     <Edit className="w-4 h-4 text-green-500 hover:bg-green-100 "/>
                     Edit
                 </DropdownMenuItem>

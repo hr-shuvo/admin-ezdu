@@ -2,6 +2,7 @@
 import axios, { AxiosError, AxiosInstance } from "axios";
 import { BASE_API_URL } from "@/lib/api/endpoints";
 import { showToast } from "@/components/common/toast";
+import { notFound } from "next/navigation";
 
 export const httpClient: AxiosInstance = axios.create({
     baseURL: BASE_API_URL,
@@ -47,7 +48,8 @@ httpClient.interceptors.response.use(
                 showToast(message || "Forbidden - Access denied", "error");
             }
             else if(status === 404){
-                showToast(message || "Resource not found", "error");
+                notFound();
+                // showToast(message || "Resource not found", "error");
             }
             else if(status === 500){
                 showToast(message || "Server Error", "error");
@@ -55,7 +57,6 @@ httpClient.interceptors.response.use(
             else{
                 showToast(message || "An error occurred", "error");
             }
-
         } else if (error.request) {
             // Network error - no response received
             console.error("Network error - no response:", error.request);

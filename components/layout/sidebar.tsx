@@ -71,8 +71,8 @@ const items = [
 const AppSidebar = () => {
     return (
         <Sidebar collapsible="icon" side="left">
-            <SidebarHeader className='py-4'>
-                <SidebarMenu>
+            <SidebarHeader>
+                <SidebarMenu className='py-4'>
                     <SidebarMenuItem>
                         <SidebarMenuButton asChild>
                             <Link href='/'>
@@ -84,9 +84,11 @@ const AppSidebar = () => {
                     </SidebarMenuItem>
 
                 </SidebarMenu>
+
+
+                <SidebarSeparator/>
             </SidebarHeader>
 
-            <SidebarSeparator/>
 
             <SidebarContent>
                 <SidebarGroup>
@@ -102,7 +104,7 @@ const AppSidebar = () => {
                                         </Link>
                                     </SidebarMenuButton>
                                     {
-                                        item.title ==="Inbox" && (
+                                        item.title === "Inbox" && (
                                             <SidebarMenuBadge>23</SidebarMenuBadge>
                                         )
                                     }
@@ -252,7 +254,6 @@ const AppSidebar = () => {
 }
 
 export default AppSidebar;
-
 
 
 //

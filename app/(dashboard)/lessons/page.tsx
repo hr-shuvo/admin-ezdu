@@ -5,11 +5,13 @@ import { DataTable } from "@/components/tables/data-table";
 import { Input } from "@/components/ui/input";
 import { useDebounce } from "@/hooks/use-debounce";
 import { Pagination, Sorting } from "@/lib/constants/pagination";
-import { Select, SelectContent, SelectItem, SelectTrigger } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { lessonService } from "@/services/lesson.service";
 import { lessonColumns } from "@/app/(dashboard)/lessons/columns";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
 
 
 const LessonsPage = () => {
@@ -30,7 +32,7 @@ const LessonsPage = () => {
 
         startTransition(async () => {
             const result = await lessonService.getList(pagination.pageNumber, pagination.pageSize, sorting.orderBy, sorting.sortBy, debouncedSearchQuery, debouncedWithDeleted);
-            // console.log(result);
+            // console.log(result.items);
             setData(result.items);
 
             setPagination({
@@ -67,52 +69,65 @@ const LessonsPage = () => {
 
 
     return (
-        <div className=''>
-            <div className='mb-8 px-4 py-2 bg-secondary rounded-md'>
-                <h1 className='font-semibold'>All Class</h1>
-            </div>
+        <Card>
+            <CardHeader>
+                <CardTitle>
+                    <div className='rounded-md flex items-center justify-between'>
+                        <h1 className='font-semibold'>All Lessons</h1>
 
-            <div className='mb-4 flex items-center gap-2'>
-                <Input
-                    placeholder="Search lessons..."
-                    value={searchQuery}
-                    onChange={(e) => handleSearchChange(e.target.value)}
-                    className="max-w-sm"
+                        <Link href={'./lessons/form'}>
+                            <Button>Add New</Button>
+                        </Link>
+                    </div>
+
+                </CardTitle>
+
+                <div className='mb-4 mt-2 flex items-center gap-2'>
+                    <Input
+                        placeholder="Search lessons..."
+                        value={searchQuery}
+                        onChange={(e) => handleSearchChange(e.target.value)}
+                        className="max-w-sm"
+                    />
+
+                    <div className="flex items-center space-x-2">
+                        <Switch
+                            id="toggle-mode"
+                            checked={withDeleted}
+                            onCheckedChange={(checked) => setWithDeleted(checked)}
+                        />
+                        <Label htmlFor="toggle-mode">With Deleted</Label>
+                    </div>
+
+
+                </div>
+            </CardHeader>
+
+            <CardContent>
+                <DataTable
+                    columns={lessonColumns(refreshData)}
+                    data={data}
+                    loading={isPending}
+                    pagination={{
+                        pageNumber: pagination.pageNumber - 1, // TanStack uses 0-based indexing
+                        pageSize: pagination.pageSize,
+                        totalPage: pagination.totalPage,
+                        totalCount: pagination.totalCount,
+                    }}
+                    onPaginationChange={({pageNumber, pageSize}) => {
+                        if (pageSize !== pagination.pageSize) {
+                            handlePageSizeChange(pageSize);
+                        } else if (pageNumber + 1 !== pagination.pageNumber) {
+                            handlePageChange(pageNumber + 1);
+                        }
+                    }}
+                    onSortingChange={handleSortingChange}
                 />
 
-                <div className="flex items-center space-x-2">
-                    <Switch
-                        id="toggle-mode"
-                        checked={withDeleted}
-                        onCheckedChange={(checked) => setWithDeleted(checked)}
-                    />
-                    <Label htmlFor="toggle-mode">With Deleted</Label>
-                </div>
+            </CardContent>
 
 
-            </div>
-
-            <DataTable
-                columns={lessonColumns(refreshData)}
-                data={data}
-                loading={isPending}
-                pagination={{
-                    pageNumber: pagination.pageNumber - 1, // TanStack uses 0-based indexing
-                    pageSize: pagination.pageSize,
-                    totalPage: pagination.totalPage,
-                    totalCount: pagination.totalCount,
-                }}
-                onPaginationChange={({pageNumber, pageSize}) => {
-                    if (pageSize !== pagination.pageSize) {
-                        handlePageSizeChange(pageSize);
-                    } else if (pageNumber + 1 !== pagination.pageNumber) {
-                        handlePageChange(pageNumber + 1);
-                    }
-                }}
-                onSortingChange={handleSortingChange}
-            />
-
-        </div>
+        </Card>
     )
 
 

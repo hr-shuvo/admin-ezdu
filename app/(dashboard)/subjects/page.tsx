@@ -5,7 +5,6 @@ import { DataTable } from "@/components/tables/data-table";
 import { Input } from "@/components/ui/input";
 import { useDebounce } from "@/hooks/use-debounce";
 import { Pagination, Sorting } from "@/lib/constants/pagination";
-import { Select, SelectContent, SelectItem, SelectTrigger } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { subjectColumns } from "@/app/(dashboard)/subjects/columns";

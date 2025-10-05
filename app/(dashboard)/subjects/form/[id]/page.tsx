@@ -2,7 +2,7 @@
 
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { subjectSchema } from "@/schemas/subjectSchema";
+import { subjectSchema } from "@/schemas/subject-schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -47,7 +47,7 @@ const SubjectEditPage = () => {
                     const subjectId = Number(params.id);
                     const data = await subjectService.get(subjectId);
 
-                    data.subTitle = data.title ?? '';
+                    data.subTitle = data.subTitle ?? '';
                     data.segment = data.segment ? Number(data.segment) : undefined;
                     data.groups = data.groups.split(',').map((group: string) => group.trim()).filter(Boolean);
 
