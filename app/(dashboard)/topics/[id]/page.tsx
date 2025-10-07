@@ -20,15 +20,15 @@ import Link from "next/link";
 import ConfirmDialog from "@/components/common/confirm-dialog";
 import { cn } from "@/lib/utils";
 import { notFound, useParams, useRouter } from "next/navigation";
-import { lessonService } from "@/services/lesson.service";
 import { formatDateTime } from "@/lib/utils/datetime-helper-fns";
 import Loading from "@/app/(dashboard)/loading";
 import { Badge } from "@/components/ui/badge";
 import { StatusMap } from "@/lib/constants/status";
 import { showToast } from "@/components/common/toast";
+import { topicService } from "@/services/topic.service";
 
 
-export default function LessonDetails() {
+export default function TopicDetails() {
     const router = useRouter();
     const params = useParams();
     const [isLoading, setLoading] = useState(true);
@@ -39,7 +39,7 @@ export default function LessonDetails() {
             setLoading(true);
             try {
                 if (params.id) {
-                    const response = await lessonService.get(Number(params.id));
+                    const response = await topicService.get(Number(params.id));
                     // console.log(response);
 
                     if (!response) {
@@ -61,7 +61,7 @@ export default function LessonDetails() {
 
     const handleDelete = async () => {
         try {
-            await lessonService.delete(data.id);
+            await topicService.delete(data.id);
             showToast("Delete Success", "info");
             router.push(".");
         } catch {
@@ -90,7 +90,7 @@ export default function LessonDetails() {
                             </Link>
                             <div>
                                 <CardTitle className="text-3xl font-bold tracking-tight">{data.name}</CardTitle>
-                                <CardDescription className="text-muted-foreground">Lesson ID:
+                                <CardDescription className="text-muted-foreground">Topic ID:
                                     #{data.id}</CardDescription>
                             </div>
                         </div>
@@ -115,7 +115,7 @@ export default function LessonDetails() {
                                     <Button
                                         disabled={isLoading}
                                         className={cn(
-                                            "flex items-center gap-2 text-red-500 bg-transparent hover:bg-red-500 hover:text-white dark:text-red-400 dark:hover:bg-red-600 dark:hover:text-white disabled:opacity-50 disabled:cursor-not-allowed transition-colors",
+                                            "flex items-center gap-2 text-red-500 bg-transparent hover:bg-red-500 hover:text-white dark:text-red-400 dark:hover:bg-red-500 dark:hover:text-white disabled:opacity-50 disabled:cursor-not-allowed transition-colors",
                                         )}
                                         onClick={(e) => e.preventDefault()} // changed from onSelect to onClick
                                     >
@@ -140,23 +140,29 @@ export default function LessonDetails() {
                 <div className="lg:col-span-2 space-y-6">
                     <Card>
                         <CardHeader>
-                            <CardTitle>Lesson Information</CardTitle>
-                            <CardDescription>Basic details about this lesson</CardDescription>
+                            <CardTitle>Topic Information</CardTitle>
+                            <CardDescription>Basic details about this topic</CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-4">
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div>
-                                    <p className="text-sm font-medium text-gray-600">Lesson Name</p>
+                                    <p className="text-sm font-medium text-gray-500">Topic Name</p>
                                     <p className="text-lg font-semibold mt-1">{data.name}</p>
                                 </div>
                                 <div>
-                                    <p className="text-sm font-medium text-gray-600">Subtitle</p>
+                                    <p className="text-sm font-medium text-gray-500">Subtitle</p>
                                     <p className="text-lg font-semibold mt-1 capitalize">
                                         {data.subTitle || 'N/A'}
                                     </p>
                                 </div>
+                                <div className='lg:col-span-2'>
+                                    <p className="text-sm font-medium text-gray-500">Description</p>
+                                    <p className="text-lg font-semibold mt-1 capitalize">
+                                        {data.description || 'N/A'}
+                                    </p>
+                                </div>
                                 <div>
-                                    <p className="text-sm font-medium text-gray-600">Subject</p>
+                                    <p className="text-sm font-medium text-gray-500">Subject</p>
                                     <div className="flex items-center gap-2 mt-1">
                                         <p className="text-lg font-semibold">{data.subject.name}</p>
                                         <Link
@@ -169,7 +175,20 @@ export default function LessonDetails() {
                                     </div>
                                 </div>
                                 <div>
-                                    <p className="text-sm font-medium text-gray-600">Segment</p>
+                                    <p className="text-sm font-medium text-gray-500">Lesson</p>
+                                    <div className="flex items-center gap-2 mt-1">
+                                        <p className="text-lg font-semibold">{data.lesson.name}</p>
+                                        <Link
+                                            href={`/subjects/${data.lesson.id}`}
+                                            className="text-blue-500 hover:text-blue-700 transition-colors"
+                                            title="View Lesson"
+                                        >
+                                            <ExternalLink className="w-4 h-4"/>
+                                        </Link>
+                                    </div>
+                                </div>
+                                <div>
+                                    <p className="text-sm font-medium text-gray-500">Segment</p>
                                     <p className="text-lg font-semibold mt-1">Segment {data.segment}</p>
                                 </div>
                                 <div>
@@ -191,7 +210,7 @@ export default function LessonDetails() {
                                 <>
                                     <div className="border-t pt-4 mt-4"></div>
                                     <div>
-                                        <p className="text-sm font-medium text-gray-600 mb-2">Content</p>
+                                        <p className="text-sm font-medium text-gray-500 mb-2">Content</p>
                                         <div className="p-4 rounded-lg">
                                             <p className="text-base">{data.content}</p>
                                         </div>
@@ -212,7 +231,7 @@ export default function LessonDetails() {
                                 <div className="flex items-start gap-3 p-4 border rounded-lg">
                                     <div className={`p-3 rounded-lg `}>
                                         <Video
-                                            className={`h-6 w-6 ${data.videoUrl ? 'text-red-600' : 'text-gray-400'}`}/>
+                                            className={`h-6 w-6 ${data.videoUrl ? 'text-red-500' : 'text-gray-400'}`}/>
                                     </div>
                                     <div className="flex-1">
                                         <p className="font-medium">Video Content</p>
@@ -229,7 +248,7 @@ export default function LessonDetails() {
                                                 </Link>
                                             </div>
                                         ) : (
-                                            <p className="text-sm text-gray-600 mt-1">No video available</p>
+                                            <p className="text-sm text-gray-500 mt-1">No video available</p>
                                         )}
                                     </div>
                                 </div>
@@ -249,14 +268,14 @@ export default function LessonDetails() {
                                                     href={data.resourceUrl}
                                                     target="_blank"
                                                     rel="noopener noreferrer"
-                                                    className="text-sm text-blue-600 hover:underline flex items-center gap-1"
+                                                    className="text-sm text-blue-500 hover:underline flex items-center gap-1"
                                                 >
                                                     View Resource
                                                     <ExternalLink className="h-3 w-3"/>
                                                 </a>
                                             </div>
                                         ) : (
-                                            <p className="text-sm text-gray-600 mt-1">No resources available</p>
+                                            <p className="text-sm text-gray-500 mt-1">No resources available</p>
                                         )}
                                     </div>
                                 </div>
@@ -312,26 +331,26 @@ export default function LessonDetails() {
                         <CardContent className="space-y-4">
                             <div className="flex items-center justify-between p-3 rounded-lg">
                                 <div className="flex items-center gap-2">
-                                    <BookOpen className="h-5 w-5 text-purple-600"/>
-                                    <span className="text-sm font-medium">Total Lessons</span>
+                                    <BookOpen className="h-5 w-5 text-purple-500"/>
+                                    <span className="text-sm font-medium">Total Topics</span>
                                 </div>
-                                <span className="text-2xl font-bold text-purple-600">12</span>
+                                <span className="text-2xl font-bold text-purple-500">12</span>
                             </div>
                             <div className="flex items-center justify-between p-3  rounded-lg">
                                 <div className="flex items-center gap-2">
-                                    <Video className="h-5 w-5 text-blue-600"/>
+                                    <Video className="h-5 w-5 text-blue-500"/>
                                     <span className="text-sm font-medium">Video Content</span>
                                 </div>
-                                <span className="text-2xl font-bold text-blue-600">
+                                <span className="text-2xl font-bold text-blue-500">
                     {data.videoUrl ? '1' : '0'}
                   </span>
                             </div>
                             <div className="flex items-center justify-between p-3  rounded-lg">
                                 <div className="flex items-center gap-2">
-                                    <FileText className="h-5 w-5 text-green-600"/>
+                                    <FileText className="h-5 w-5 text-green-500"/>
                                     <span className="text-sm font-medium">Resources</span>
                                 </div>
-                                <span className="text-2xl font-bold text-green-600">
+                                <span className="text-2xl font-bold text-green-500">
                     {data.resourceUrl ? '1' : '0'}
                   </span>
                             </div>
@@ -353,7 +372,7 @@ export default function LessonDetails() {
                                 <div key={i}
                                      className="p-3 border rounded-lg cursor-pointer">
                                     <p className="font-medium text-sm">{topic.name}</p>
-                                    <p className="text-xs text-gray-600">{topic.lessons} lessons •
+                                    <p className="text-xs text-gray-500">{topic.lessons} lessons •
                                         Subject {data.subjectId}</p>
                                 </div>
                             ))}
@@ -367,7 +386,7 @@ export default function LessonDetails() {
                         <CardContent className="space-y-2">
                             <Button variant="outline" className="w-full justify-start">
                                 <FileText className="h-4 w-4 mr-2"/>
-                                View Lessons
+                                View Topics
                             </Button>
                             <Button variant="outline" className="w-full justify-start">
                                 <Video className="h-4 w-4 mr-2"/>
