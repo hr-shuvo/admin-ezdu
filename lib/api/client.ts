@@ -1,4 +1,3 @@
-
 import axios, { AxiosError, AxiosInstance } from "axios";
 import { BASE_API_URL } from "@/lib/api/endpoints";
 import { showToast } from "@/components/common/toast";
@@ -24,7 +23,11 @@ httpClient.interceptors.request.use(
 
 httpClient.interceptors.response.use(
     (response: any) => response,
-    (error: AxiosError<{ statusCode: number, message: string }>) => {
+    (error: AxiosError<{
+        errors: [];
+        statusCode: number,
+        message: string
+    }>) => {
         console.error('Interceptor error: ', error); // Debug log
 
         if (error.code === "ECONNABORTED") {
@@ -35,26 +38,25 @@ httpClient.interceptors.response.use(
             const message = error.response.data?.message || "Something went wrong";
             const status = error.response.status;
 
-            if(status === 400){
-                showToast(message || "Bad Request", "error");
-            }
-            else if(status === 401){
+            if (status === 400) {
+                if (error.response.data.errors && error.response.data.errors.length > 0) {
+                    error.response.data.errors.forEach((err: string) => showToast(err, "error"));
+                } else {
+                    showToast(message || "Bad Request", "error");
+                }
+            } else if (status === 401) {
                 showToast(message || "Unauthorized - Please login again", "error");
                 // Optional: Redirect to login or clear auth tokens
                 // localStorage.removeItem('token');
                 // window.location.href = '/login';
-            }
-            else if(status === 403){
+            } else if (status === 403) {
                 showToast(message || "Forbidden - Access denied", "error");
-            }
-            else if(status === 404){
+            } else if (status === 404) {
                 notFound();
                 // showToast(message || "Resource not found", "error");
-            }
-            else if(status === 500){
+            } else if (status === 500) {
                 showToast(message || "Server Error", "error");
-            }
-            else{
+            } else {
                 showToast(message || "An error occurred", "error");
             }
         } else if (error.request) {

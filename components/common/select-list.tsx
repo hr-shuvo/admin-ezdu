@@ -31,6 +31,7 @@ type Props = {
     disabled?: boolean;
     className?: string;
     itemsPerPage?: number;
+    showSubTitle?: boolean;
 }
 
 const SelectList = ({
@@ -43,7 +44,8 @@ const SelectList = ({
                         label,
                         disabled = false,
                         className = "",
-                        itemsPerPage = 10
+                        itemsPerPage = 10,
+                        showSubTitle = false
                     }: Props) => {
     const cacheRef = useRef<Map<string, CacheEntry>>(new Map());
     const cacheDuration = 60 * 1000; // 1 minute cache
@@ -189,9 +191,9 @@ const SelectList = ({
                                         />
                                         <div className="flex flex-col items-start">
                                             <span className="font-medium">{item.name}</span>
-                                            {item.description && (
+                                            {item.subTitle && showSubTitle && (
                                                 <span className="text-xs text-muted-foreground">
-              {item.description}
+              {item.subTitle}
             </span>
                                             )}
                                         </div>
@@ -221,7 +223,7 @@ const SelectList = ({
                                         disabled={currentPage === 1}
                                         className="h-7 px-2 text-xs"
                                     >
-                                        <ChevronLeft className="w-4 h-4" />
+                                        <ChevronLeft className="w-4 h-4"/>
                                     </Button>
                                     <Button
                                         variant="outline"
@@ -233,7 +235,7 @@ const SelectList = ({
                                         disabled={currentPage === totalPages}
                                         className="h-7 px-2 text-xs"
                                     >
-                                        <ChevronRight className="w-4 h-4" />
+                                        <ChevronRight className="w-4 h-4"/>
                                     </Button>
                                 </div>
                             </div>

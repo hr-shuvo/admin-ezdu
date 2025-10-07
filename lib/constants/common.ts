@@ -21,10 +21,20 @@ const availableSegments: { value: number, name: string }[] = [
     {value: 7, name:"Other"},
 ];
 
+const contentTypes: { value: number, name: string }[] = [
+    {value: 1, name:"ReadingText"},
+    {value: 2, name:"Video"},
+    {value: 3, name:"Pdf"},
+    {value: 4, name:"Url"},
+    {value: 5, name:"Others"},
+];
+
+
 
 
 export const enums = {
     statuses,
     availableGroups,
-    availableSegments
+    availableSegments,
+    contentTypes,
 }
