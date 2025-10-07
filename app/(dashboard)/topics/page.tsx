@@ -123,7 +123,7 @@ const TopicsPage = () => {
 
 
     return (
-        <Card className=''>
+        <Card>
 
             <CardHeader>
                 <CardTitle>

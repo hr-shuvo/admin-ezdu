@@ -13,6 +13,8 @@ const isLoggedIn = async (): Promise<boolean> => {
 const login = async (values: z.infer<typeof LoginSchema>): Promise<any> => {
     const response = await httpClient.post('auth/login', values);
 
+    localStorage.setItem("token", response.data?.token);
+
     return response.data;
 }
 

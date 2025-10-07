@@ -10,17 +10,17 @@ export const httpClient: AxiosInstance = axios.create({
     withCredentials: true
 });
 
-// httpClient.interceptors.request.use(
-//     (config) => {
-//         // attach auth token if available
-//         const token = localStorage.getItem("token");
-//         if (token) {
-//             config.headers.Authorization = `Bearer ${token}`;
-//         }
-//         return config;
-//     },
-//     (error) => Promise.reject(error)
-// );
+httpClient.interceptors.request.use(
+    (config) => {
+        // attach auth token if available
+        const token = localStorage.getItem("token");
+        if (token) {
+            config.headers.Authorization = `Bearer ${token}`;
+        }
+        return config;
+    },
+    (error) => Promise.reject(error)
+);
 
 httpClient.interceptors.response.use(
     (response: any) => response,
