@@ -78,7 +78,8 @@ export const topicColumns = (refreshData: () => void): ColumnDef<any>[] => [
                 <div>-</div>
             );
         }
-    },{
+    },
+    {
         id: 'updatedAt',
         header: ({column}) => (
             <Button
