@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { showToast } from "@/components/common/toast";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import SelectList from "@/components/common/select-list";
 import { classService } from "@/services/class.service";
 import { subjectService } from "@/services/subject.service";
@@ -24,7 +24,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { topicContentService } from "@/services/topic-content.service";
 
 
-const TopicCreatePage = () => {
+const TopicEditPage = () => {
+    const params = useParams();
     const router = useRouter();
     const [isLoading, setLoading] = useState(false);
 
@@ -46,6 +47,35 @@ const TopicCreatePage = () => {
             status: 0,
         }
     });
+
+    useEffect(() => {
+        async function loadData() {
+            setLoading(true);
+            try {
+                if (params.id) {
+                    const contentId = Number(params.id);
+                    const data = await topicContentService.get(contentId);
+
+                    form.reset(data);
+
+                    // console.log(data);
+
+                    // const subject = await subjectService.get(data.subjectId);
+                    setClassId(data?.topic?.subject.classId);
+                    setSubjectId(data?.subjectId);
+                    setLessonId(data?.lessonId);
+
+                    // console.log(data)
+                }
+            } catch (error) {
+                // showToast("Failed to load class data.", "error");
+            } finally {
+                setLoading(false);
+            }
+        }
+
+        loadData();
+    }, [params.id]);
 
 
     const loadClasses = async (page: number, limit: number, search?: string | undefined): Promise<any> => {
@@ -130,7 +160,7 @@ const TopicCreatePage = () => {
             <div className="mx-auto grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <Card className="lg:col-span-2">
                     <CardHeader>
-                        <CardTitle className="text-2xl">Create Topic Content</CardTitle>
+                        <CardTitle className="text-2xl">Edit Topic Content</CardTitle>
                         <CardDescription>
                             Add a new Topic to the subject database
                         </CardDescription>
@@ -145,7 +175,7 @@ const TopicCreatePage = () => {
                                         <div className="md:col-span-4">
                                             <FormField name="name" control={form.control} render={({field}) => (
                                                 <FormItem>
-                                                    <FormLabel>Topic name *</FormLabel>
+                                                    <FormLabel>Topic content name *</FormLabel>
                                                     <FormControl>
                                                         <Input
                                                             {...field}
@@ -164,7 +194,7 @@ const TopicCreatePage = () => {
                                         <div className="md:col-span-4">
                                             <FormField name="content" control={form.control} render={({field}) => (
                                                 <FormItem>
-                                                    <FormLabel>Topic Content</FormLabel>
+                                                    <FormLabel>Content</FormLabel>
                                                     <FormControl>
                                                         <Textarea
                                                             {...field}
@@ -365,10 +395,10 @@ const TopicCreatePage = () => {
                                                     {isLoading ? (
                                                         <>
                                                             <Loader2 className="mr-2 h-4 w-4 animate-spin"/>
-                                                            Creating...
+                                                            Updating...
                                                         </>
                                                     ) : (
-                                                        'Create Class'
+                                                        'Update Content'
                                                     )}
                                                 </Button>
                                                 <Button
@@ -407,7 +437,7 @@ const TopicCreatePage = () => {
                     <CardContent>
                         <div className="space-y-4 text-sm text-muted-foreground">
                             <p>
-                                Use this form to create a new academic topic. Fill in the topic name, select the
+                                Use this form to update this academic topic. Fill in the topic name, select the
                                 appropriate segment and status, and optionally assign groups to the topic.
                             </p>
                             <p>
@@ -429,4 +459,4 @@ const TopicCreatePage = () => {
 
 }
 
-export default TopicCreatePage;
+export default TopicEditPage;
