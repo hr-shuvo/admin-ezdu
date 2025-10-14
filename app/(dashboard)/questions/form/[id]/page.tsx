@@ -385,7 +385,7 @@ const QuestionEditPage = () => {
                                             </FormLabel>
                                             <div className="space-y-2">
                                                 {optionFields.map((option, index) => (
-                                                    <div key={index} className="flex items-center gap-2">
+                                                    <div key={option.id} className="flex items-center gap-2">
                                                         <FormField
                                                             control={form.control}
                                                             name={`options.${index}.name`}

@@ -325,7 +325,7 @@ export default function ClassDetails() {
                                 <div key={i}
                                      className="p-3 border rounded-lg hover:bg-gray-50 dark:hover:bg-gray-900 transition-colors cursor-pointer">
                                     <p className="font-medium text-sm">{name}</p>
-                                    <p className="text-xs text-gray-600">Segment 2 • {28 - i * 2} students</p>
+                                    <p className="text-xs text-gray-500">Segment 2 • {28 - i * 2} students</p>
                                 </div>
                             ))}
                         </CardContent>
