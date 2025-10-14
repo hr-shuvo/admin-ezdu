@@ -120,6 +120,47 @@ const AppSidebar = () => {
                     <SidebarGroup>
                         <SidebarGroupLabel asChild>
                             <CollapsibleTrigger>
+                                Quiz Management
+                                <ChevronDown
+                                    className='ml-auto transition-transform group-data-[state=open]/collapsible:rotate-180'/>
+                            </CollapsibleTrigger>
+                        </SidebarGroupLabel>
+
+                        <CollapsibleContent>
+                            <SidebarGroupContent>
+                                <SidebarMenu>
+                                    <SidebarMenuItem>
+                                        <SidebarMenuButton asChild>
+                                            <Link href='/quizzes'><GraduationCap/>Quizzes</Link>
+                                        </SidebarMenuButton>
+                                    </SidebarMenuItem>
+
+                                    <SidebarMenuItem>
+                                        <SidebarMenuButton asChild>
+                                            <Link href='/questions'><BookOpen/>Questions</Link>
+                                        </SidebarMenuButton>
+                                    </SidebarMenuItem>
+
+                                    <SidebarMenuItem>
+                                        <SidebarMenuButton asChild>
+                                            <Link href='/assignments'><FileText/>Assignments</Link>
+                                        </SidebarMenuButton>
+                                    </SidebarMenuItem>
+
+                                </SidebarMenu>
+                            </SidebarGroupContent>
+
+
+                        </CollapsibleContent>
+
+
+                    </SidebarGroup>
+                </Collapsible>
+
+                <Collapsible defaultOpen={true} className='group/collapsible'>
+                    <SidebarGroup>
+                        <SidebarGroupLabel asChild>
+                            <CollapsibleTrigger>
                                 Academic Management
                                 <ChevronDown
                                     className='ml-auto transition-transform group-data-[state=open]/collapsible:rotate-180'/>

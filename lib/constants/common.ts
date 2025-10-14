@@ -29,6 +29,15 @@ const contentTypes: { value: number, name: string }[] = [
     {value: 5, name:"Others"},
 ];
 
+const questionTypes: { value: number, name: string }[] = [
+    {value: 1, name:"Multiple Choice"},
+    {value: 2, name:"True/False"},
+    {value: 3, name:"Short Answer"},
+    {value: 4, name:"Fill in the Blanks"},
+    {value: 5, name:"Matching"},
+    {value: 6, name:"Descriptive"},
+];
+
 
 
 
@@ -37,4 +46,5 @@ export const enums = {
     availableGroups,
     availableSegments,
     contentTypes,
+    questionTypes
 }

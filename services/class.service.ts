@@ -55,6 +55,21 @@ const restore = async (id: number): Promise<any> => {
 }
 
 
+const getSelectList = async (page: number, limit: number, search?: string | undefined): Promise<any> => {
+
+    try {
+        const result = await classService.getList(page, limit, undefined, undefined, search);
+        // console.log('classes: ', result.items);
+        // setClasses(result.items);
+
+        return {items: result.items, total: result.totalCount};
+
+    } catch (error) {
+        console.log(error);
+    }
+};
+
+
 export const classService = {
     getList,
     get,
@@ -62,4 +77,5 @@ export const classService = {
     delete: remove,
     permanentDelete,
     restore,
+    getSelectList
 }
