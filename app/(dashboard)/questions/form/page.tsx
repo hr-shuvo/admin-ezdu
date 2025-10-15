@@ -46,8 +46,8 @@ const QuestionCreatePage = () => {
             marks: 1,
             difficultyLevel: 1,
             options: [
-                {text: '', isCorrect: false},
-                {text: '', isCorrect: false}
+                {name: '', isCorrect: false},
+                {name: '', isCorrect: false}
             ],
             status: 0,
         }
@@ -357,7 +357,7 @@ const QuestionCreatePage = () => {
                                                     <div key={index} className="flex items-center gap-2">
                                                         <FormField
                                                             control={form.control}
-                                                            name={`options.${index}.text`}
+                                                            name={`options.${index}.name`}
                                                             render={({field}) => (
                                                                 <FormItem className="w-full">
                                                                     <FormControl>
@@ -405,7 +405,7 @@ const QuestionCreatePage = () => {
                                                 <Button
                                                     type="button"
                                                     variant="outline"
-                                                    onClick={() => append({text: "", isCorrect: false})}
+                                                    onClick={() => append({name: "", isCorrect: false})}
                                                     disabled={isLoading}
                                                 >
                                                     <Plus className="h-4 w-4 mr-2"/> Add Option
