@@ -33,6 +33,11 @@ const get = async (id: number): Promise<any> => {
     return response.data;
 }
 
+const getDetails = async (id: number): Promise<any> => {
+    const response = await httpClient.get(`/quizzes/details/${id}`);
+    return response.data;
+}
+
 const remove = async (id: number): Promise<any> => {
     // try {
     //
@@ -60,6 +65,7 @@ const restore = async (id: number): Promise<any> => {
 export const quizService = {
     getList,
     get,
+    getDetails,
     save,
     delete: remove,
     permanentDelete,
