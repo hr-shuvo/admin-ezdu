@@ -9,9 +9,9 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import Link from "next/link";
-import { quizService } from "@/services/quiz.service";
 import { quizColumns } from "@/app/(dashboard)/quizzes/columns";
+import { quizService } from "@/services/quiz.service";
+import Link from "next/link";
 
 
 const QuizzesPage = () => {
@@ -77,7 +77,7 @@ const QuizzesPage = () => {
                     <div className='rounded-md flex items-center justify-between'>
                         <h1 className='font-semibold'>All Class</h1>
 
-                        <Link href={'./classes/form'}>
+                        <Link href={'./quizzes/form'}>
                             <Button>Add New</Button>
                         </Link>
                     </div>
@@ -88,7 +88,7 @@ const QuizzesPage = () => {
 
                 <div className='mb-4 mt-2 flex items-center gap-2'>
                     <Input
-                        placeholder="Search classes..."
+                        placeholder="Search quizzes..."
                         value={searchQuery}
                         onChange={(e) => handleSearchChange(e.target.value)}
                         className="max-w-sm"
@@ -132,8 +132,6 @@ const QuizzesPage = () => {
 
         </Card>
     )
-
-
 }
 
 

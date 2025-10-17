@@ -24,7 +24,7 @@ const getList = async (page: number=1, size: number=10, orderBy?: string, sortBy
 }
 
 const save = async (model: any): Promise<any> => {
-    const response = await httpClient.post(`/classes/save`, model);
+    const response = await httpClient.post(`/quizzes/save`, model);
     return response.data;
 }
 
