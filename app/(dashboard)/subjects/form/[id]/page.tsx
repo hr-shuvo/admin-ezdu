@@ -49,11 +49,21 @@ const SubjectEditPage = () => {
 
                     data.subTitle = data.subTitle ?? '';
                     data.segment = data.segment ? Number(data.segment) : undefined;
-                    data.groups = data.groups.split(',').map((group: string) => group.trim()).filter(Boolean);
+
+                    if (data.groups) {
+                        if (Array.isArray(data.groups)) {
+                            data.groups = data.groups.map((group: any) => String(group));
+                        } else {
+                            data.groups = data.groups.split(',').map((group: string) => group.trim()).filter(Boolean);
+                        }
+                    }else{
+                        data.groups = [];
+                    }
+
 
                     form.reset(data)
 
-                    console.log(data)
+                    // console.log(data)
                 }
             } catch (error) {
                 // showToast("Failed to load class data.", "error");
@@ -72,7 +82,7 @@ const SubjectEditPage = () => {
     const onSubmit = async (values: z.infer<typeof subjectSchema>) => {
         setLoading(true);
 
-        console.log(values);
+        // console.log(values);
 
         // setLoading(false);
         // return;

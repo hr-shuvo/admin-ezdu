@@ -1,0 +1,276 @@
+'use client';
+
+import { ColumnDef } from "@tanstack/react-table";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Button } from "@/components/ui/button";
+import { ArrowUpDown, Edit, Eye, MoreHorizontal, RotateCw, Trash } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { EntityStatus, StatusMap } from "@/lib/constants/status";
+import { formatDateTime } from "@/lib/utils/datetime-helper-fns";
+import {
+    DropdownMenu,
+    DropdownMenuContent, DropdownMenuItem,
+    DropdownMenuLabel, DropdownMenuSeparator,
+    DropdownMenuTrigger
+} from "@/components/ui/dropdown-menu";
+import { useRouter } from "next/navigation";
+import ConfirmDialog from "@/components/common/confirm-dialog";
+import { useTransition } from "react";
+import { showToast } from "@/components/common/toast";
+import { cn } from "@/lib/utils";
+import { archiveService } from "@/services/archive-service";
+
+
+export const archiveColumns = (refreshData: () => void): ColumnDef<any>[] => [
+    {
+        id: "select",
+        header: ({table}) => (
+            <Checkbox
+                checked={table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && "indeterminate")}
+                onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+                aria-label="Select all"
+            />
+        ),
+        cell: ({row}) => (
+            <Checkbox
+                checked={row.getIsSelected()}
+                onCheckedChange={(value) => row.toggleSelected(!!value)}
+                aria-label="Select row"
+            />
+        ),
+        enableSorting: false,
+        enableHiding: false
+    },
+    {
+        id: "index",
+        header: "#",
+        cell: ({row, table}) => {
+            const pageNumber = table.getState().pagination.pageIndex;
+            const pageSize = table.getState().pagination.pageSize;
+            return <div>{pageNumber * pageSize + row.index + 1}</div>; // +1 to start counting from 1
+        },
+        enableSorting: false,
+        enableHiding: false,
+    },
+    {
+        accessorKey: 'name',
+        header: ({column}) => {
+            return (
+                <Button
+                    variant="ghost"
+                    onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+                >
+                    Name
+                    <ArrowUpDown className="ml-2 h-4 w-4"/>
+                </Button>
+            )
+        }
+    },
+    {
+        accessorKey: 'subjectId',
+        header: "Subject ID",
+        cell: ({getValue}) => {
+            const value = getValue() as string;
+
+            return value ? (
+                <div>{value}</div>
+            ) : (
+                <div>-</div>
+            );
+        }
+    },
+    {
+        accessorKey: 'year',
+        header: "Year",
+        cell: ({getValue}) => {
+            const year = getValue() as string;
+
+            return year ? (
+                <div>{year}</div>
+            ) : (
+                <div>-</div>
+            );
+        }
+    },
+    {
+        id: 'updatedAt',
+        header: ({column}) => (
+            <Button
+                variant="ghost"
+                onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+            >
+                ModifiedAt
+                <ArrowUpDown className="ml-2 h-4 w-4"/>
+            </Button>
+        ),
+        cell: ({row}) => {
+            const formattedUpdated = formatDateTime(row.original.updatedAt);
+            const formattedCreated = formatDateTime(row.original.createdAt);
+
+            return (
+                <div className="flex flex-col">
+                    <span className="font-medium">{formattedUpdated}</span>
+                    {
+                        row.original.updatedAt !== row.original.createdAt && (
+                            <span className="text-xs text-muted-foreground"> Created: {formattedCreated}</span>
+                        )
+                    }
+                </div>
+            );
+        },
+        sortingFn: (a, b) =>
+            new Date(a.original.updatedAt).getTime() - new Date(b.original.updatedAt).getTime(),
+    },
+    {
+        accessorKey: "status",
+        header: "Status",
+        cell: ({row}) => {
+            const status = (row.getValue("status") ?? 0) as EntityStatus;
+
+            return (
+                <Badge className={StatusMap[status].color} variant="outline">
+                    {StatusMap[status].text}
+                </Badge>
+            )
+        }
+    },
+    {
+        id: "actions",
+        cell: ({row}) => <ActionCell data={row.original} refreshData={refreshData}/>
+    }
+
+];
+
+
+const ActionCell = ({data, refreshData}: { data: any, refreshData: () => void }) => {
+    const router = useRouter();
+    const [isPending, startTransition] = useTransition();
+
+    const handleDelete = () => {
+        startTransition(async () => {
+            try {
+                await archiveService.delete(data.id);
+                refreshData();
+                showToast("Delete Success", "info")
+            } catch {
+            }
+        })
+    };
+
+    const handlePermanentDelete = () => {
+        startTransition(async () => {
+            try {
+                await archiveService.permanentDelete(data.id);
+                refreshData();
+                showToast("Delete Success", "warning")
+            } catch {
+            }
+        })
+    };
+
+    const handleRestore = () => {
+        startTransition(async () => {
+            try {
+                await archiveService.restore(data.id);
+                refreshData();
+                showToast("Restore Success", "success")
+            } catch {
+            }
+        })
+    }
+
+
+    return (
+
+        <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+                <Button variant="ghost" className="h-8 w-8 p-0">
+                    <span className="sr-only">Open menu</span>
+                    <MoreHorizontal className="h-4 w-4"/>
+                </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+                <DropdownMenuLabel>Actions</DropdownMenuLabel>
+
+                <DropdownMenuItem disabled={isPending}
+                                  onClick={() => navigator.clipboard.writeText(data.id)}
+                >
+                    Copy ID
+                </DropdownMenuItem>
+                <DropdownMenuSeparator/>
+
+                <DropdownMenuItem disabled={isPending}
+                                  className="text-blue-500 hover:bg-blue-100 flex items-center gap-2"
+                                  onClick={() => router.push(`./archives/${data.id}`)}>
+                    <Eye className="w-4 h-4 text-blue-500 hover:bg-blue-100"/>
+                    View
+                </DropdownMenuItem>
+
+                <DropdownMenuItem disabled={isPending}
+                                  className="text-green-500 hover:bg-green-100 flex items-center gap-2"
+                                  onClick={() => router.push(`./archives/form/${data.id}`)}>
+                    <Edit className="w-4 h-4 text-green-500 hover:bg-green-100 "/>
+                    Edit
+                </DropdownMenuItem>
+
+
+                {
+                    data.status === -404 ? (
+                            <>
+                                <DropdownMenuItem disabled={isPending}
+                                                  className="text-orange-500 hover:bg-orange-100 flex items-center gap-2"
+                                                  onClick={handleRestore}>
+                                    <RotateCw className="w-4 h-4 text-orange-500"/>
+                                    Restore
+                                </DropdownMenuItem>
+
+                                <ConfirmDialog
+                                    title="Permanent Delete Class"
+                                    description="Are you sure you want to permanent delete this topic? This action cannot be undone."
+                                    confirmText="Permanent Delete"
+                                    cancelText="Cancel"
+                                    confirmColor="destructive"
+                                    onConfirm={handlePermanentDelete}
+                                    trigger={
+                                        <DropdownMenuItem disabled={isPending}
+                                                          className="text-red-500 hover:bg-red-100 flex items-center gap-2"
+                                                          onSelect={(e) => e.preventDefault()}
+                                        >
+                                            <Trash className="w-4 h-4 text-red-500 hover:bg-red-100"/>
+                                            Permanent Delete
+                                        </DropdownMenuItem>
+                                    }
+                                />
+
+                            </>
+                        )
+                        : (
+                            <ConfirmDialog
+                                title={`Delete ${data.name}`}
+                                description="Are you sure you want to delete this topic? This action cannot be undone."
+                                confirmText="Delete"
+                                cancelText="Cancel"
+                                confirmColor="destructive"
+                                onConfirm={handleDelete}
+                                trigger={
+                                    <DropdownMenuItem disabled={isPending}
+                                                      className="text-red-500 hover:bg-red-100 flex items-center gap-2 disabled"
+                                                      onSelect={(e) => e.preventDefault()}
+                                    >
+                                        <Trash
+                                            className={cn("w-4 h-4 text-red-500 hover:bg-red-100", isPending && "animate-spin")}/>
+                                        Delete
+                                    </DropdownMenuItem>
+                                }
+                            />
+                        )
+                }
+
+
+            </DropdownMenuContent>
+        </DropdownMenu>
+
+    );
+
+}
+

@@ -92,7 +92,7 @@ const AppSidebar = () => {
 
             <SidebarContent>
                 <SidebarGroup>
-                    <SidebarGroupLabel>Application</SidebarGroupLabel>
+                    <SidebarGroupLabel>Dashboard</SidebarGroupLabel>
                     <SidebarGroupContent>
                         <SidebarMenu>
                             {items.map((item) => (
@@ -120,7 +120,7 @@ const AppSidebar = () => {
                     <SidebarGroup>
                         <SidebarGroupLabel asChild>
                             <CollapsibleTrigger>
-                                Quiz Management
+                                Application
                                 <ChevronDown
                                     className='ml-auto transition-transform group-data-[state=open]/collapsible:rotate-180'/>
                             </CollapsibleTrigger>
@@ -144,6 +144,12 @@ const AppSidebar = () => {
                                     <SidebarMenuItem>
                                         <SidebarMenuButton asChild>
                                             <Link href='/assignments'><FileText/>Assignments</Link>
+                                        </SidebarMenuButton>
+                                    </SidebarMenuItem>
+
+                                    <SidebarMenuItem>
+                                        <SidebarMenuButton asChild>
+                                            <Link href='/archives'><FileText/>Archives</Link>
                                         </SidebarMenuButton>
                                     </SidebarMenuItem>
 
