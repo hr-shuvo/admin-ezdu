@@ -1,7 +1,7 @@
 import { PaginatedList } from "@/types/pagination";
 import { httpClient } from "@/lib/api/client";
 
-const getList = async (page: number, size: number, orderBy?: string, sortBy?: 'asc' | 'desc', search?: string, withDeleted = false, subjectId?: number, lessonId?: number): Promise<PaginatedList<any>> => {
+const getList = async (page: number, size: number, orderBy?: string, sortBy?: 'asc' | 'desc', search?: string, withDeleted = false, subjectId?: number, year?: number): Promise<PaginatedList<any>> => {
 
     const params = new URLSearchParams({
         pageNumber: page.toString(),
@@ -9,7 +9,7 @@ const getList = async (page: number, size: number, orderBy?: string, sortBy?: 'a
         ...(orderBy && {orderBy: orderBy}),
         ...(sortBy && {sortBy: sortBy}),
         ...(subjectId && {subjectId: subjectId.toString()}),
-        ...(lessonId && {lessonId: lessonId.toString()})
+        ...(year && {lessonId: year.toString()})
     });
 
     if (search) {

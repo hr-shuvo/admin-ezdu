@@ -21,6 +21,7 @@ import { lessonService } from "@/services/lesson.service";
 import { topicService } from "@/services/topic.service";
 import { classService } from "@/services/class.service";
 import { questionService } from "@/services/question-service";
+import { archiveService } from "@/services/archive-service";
 
 
 const QuestionEditPage = () => {
@@ -41,7 +42,7 @@ const QuestionEditPage = () => {
             passage: '',
             subjectId: undefined,
             lessonId: undefined,
-            topicId:undefined,
+            topicId: undefined,
             explanation: '',
             hint: '',
             marks: 1,
@@ -68,7 +69,7 @@ const QuestionEditPage = () => {
 
                     form.reset(data);
 
-                    if(data){
+                    if (data) {
                         const subject = await subjectService.get(data.subjectId);
                         setClassId(subject.classId);
 
@@ -76,8 +77,7 @@ const QuestionEditPage = () => {
                         setLessonId(data?.lessonId);
                     }
 
-
-                    console.log(data)
+                    // console.log(data);
                 }
             } catch (error) {
                 // showToast("Failed to load class data.", "error");
@@ -135,6 +135,20 @@ const QuestionEditPage = () => {
         }
     };
 
+    const loadArchiveExams = async (page: number, limit: number, search?: string | undefined): Promise<any> => {
+        if (!subjectId) return {items: [], total: 0};
+
+        try {
+            const result = await archiveService.getList(page, limit, undefined, undefined, search, undefined, subjectId);
+            // console.log('subjects: ', result.items);
+            // setClasses(result.items);
+
+            return {items: result.items, total: result.totalCount};
+
+        } catch (error) {
+            console.log(error);
+        }
+    };
 
 
     const onSubmit = async (values: z.infer<typeof questionSchema>) => {
@@ -158,10 +172,9 @@ const QuestionEditPage = () => {
 
         if (err && err.options && err.options.message) {
             msg = err.options.message;
-        }else if(err && err.options && err.options.root && err.options.root.message) {
+        } else if (err && err.options && err.options.root && err.options.root.message) {
             msg = err.options.root.message;
-        }
-        else if(err && err.options && Array.isArray(err.options) && err.options.length > 0) {
+        } else if (err && err.options && Array.isArray(err.options) && err.options.length > 0) {
             msg = err.options[0].text.message;
         }
 
@@ -314,8 +327,6 @@ const QuestionEditPage = () => {
 
                                         </div>
 
-
-
                                         <div className="md:col-span-2">
                                             <FormField name="questionType" control={form.control} render={({field}) => (
                                                 <FormItem>
@@ -347,7 +358,6 @@ const QuestionEditPage = () => {
                                             )}/>
                                         </div>
 
-
                                         <div className="md:col-span-2">
                                             <FormField name="status" control={form.control} render={({field}) => (
                                                 <FormItem>
@@ -377,6 +387,35 @@ const QuestionEditPage = () => {
                                                     <FormMessage/>
                                                 </FormItem>
                                             )}/>
+                                        </div>
+
+                                        <div className="md:col-span-2">
+                                            <FormField
+                                                name="examId"
+                                                control={form.control}
+                                                render={({field}) => (
+                                                    <FormItem>
+                                                        <FormLabel>Archive Exam</FormLabel>
+                                                        <FormControl>
+                                                            <SelectList
+                                                                key={subjectId}
+                                                                value={field.value}
+                                                                onValueChange={(val) => {
+                                                                    field.onChange(val);
+                                                                }} // updates the form automatically
+                                                                // loadItems={(page, limit, search) => loadSubjects(page, limit, search, classId)}
+                                                                loadItems={loadArchiveExams}
+                                                                placeholder="Select a Exam..."
+                                                                className="w-full"
+                                                                emptyText={classId ? "No exam found." : "Select subject first"}
+                                                                disabled={isLoading}
+                                                            />
+                                                        </FormControl>
+                                                        <FormMessage/>
+                                                    </FormItem>
+                                                )}
+                                            />
+
                                         </div>
 
                                         <div className="md:col-span-4">

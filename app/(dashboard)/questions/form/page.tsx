@@ -21,6 +21,7 @@ import { lessonService } from "@/services/lesson.service";
 import { topicService } from "@/services/topic.service";
 import SelectList from "@/components/common/select-list";
 import { questionService } from "@/services/question-service";
+import { archiveService } from "@/services/archive-service";
 
 
 const QuestionCreatePage = () => {
@@ -104,6 +105,20 @@ const QuestionCreatePage = () => {
         }
     };
 
+    const loadArchiveExams = async (page: number, limit: number, search?: string | undefined): Promise<any> => {
+        if (!subjectId) return {items: [], total: 0};
+
+        try {
+            const result = await archiveService.getList(page, limit, undefined, undefined, search, undefined, subjectId);
+            // console.log('subjects: ', result.items);
+            // setClasses(result.items);
+
+            return {items: result.items, total: result.totalCount};
+
+        } catch (error) {
+            console.log(error);
+        }
+    };
 
 
     const onSubmit = async (values: z.infer<typeof questionSchema>) => {
@@ -347,6 +362,37 @@ const QuestionCreatePage = () => {
                                                 </FormItem>
                                             )}/>
                                         </div>
+
+
+                                        <div className="md:col-span-2">
+                                            <FormField
+                                                name="examId"
+                                                control={form.control}
+                                                render={({field}) => (
+                                                    <FormItem>
+                                                        <FormLabel>Archive Exam</FormLabel>
+                                                        <FormControl>
+                                                            <SelectList
+                                                                key={subjectId}
+                                                                value={field.value}
+                                                                onValueChange={(val) => {
+                                                                    field.onChange(val);
+                                                                }} // updates the form automatically
+                                                                // loadItems={(page, limit, search) => loadSubjects(page, limit, search, classId)}
+                                                                loadItems={loadArchiveExams}
+                                                                placeholder="Select a Exam..."
+                                                                className="w-full"
+                                                                emptyText={classId ? "No exam found." : "Select subject first"}
+                                                                disabled={isLoading}
+                                                            />
+                                                        </FormControl>
+                                                        <FormMessage/>
+                                                    </FormItem>
+                                                )}
+                                            />
+
+                                        </div>
+
 
                                         <div className="md:col-span-4">
                                             <FormLabel>

@@ -13,6 +13,8 @@ export const questionSchema = z.object({
     lessonId: z.number({error: "Lesson is required"}).min(1, {message: "Lesson is required"}),
     topicId: z.number({error: "Topic is required"}).min(1, {message: "Topic is required"}),
 
+    examId: z.number().optional(),
+
     explanation: z.string().optional(),
     hint: z.string().optional(),
     marks: z.number().optional(),
