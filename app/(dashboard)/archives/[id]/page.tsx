@@ -14,7 +14,7 @@ import {
     FileText,
     BookOpen,
     ExternalLink,
-    Play, Trash, Tag
+    Play, Trash, Tag, Pencil, PencilOff
 } from 'lucide-react';
 import Link from "next/link";
 import ConfirmDialog from "@/components/common/confirm-dialog";
@@ -25,7 +25,8 @@ import Loading from "@/app/(dashboard)/loading";
 import { Badge } from "@/components/ui/badge";
 import { StatusMap } from "@/lib/constants/status";
 import { showToast } from "@/components/common/toast";
-import { topicService } from "@/services/topic.service";
+import { archiveService } from "@/services/archive-service";
+import Image from "next/image";
 
 
 export default function TopicDetails() {
@@ -39,8 +40,8 @@ export default function TopicDetails() {
             setLoading(true);
             try {
                 if (params.id) {
-                    const response = await topicService.get(Number(params.id));
-                    // console.log(response);
+                    const response = await archiveService.get(Number(params.id));
+                    console.log(response);
 
                     if (!response) {
                         notFound();
@@ -61,7 +62,7 @@ export default function TopicDetails() {
 
     const handleDelete = async () => {
         try {
-            await topicService.delete(data.id);
+            await archiveService.delete(data.id);
             showToast("Delete Success", "info");
             router.push(".");
         } catch {
@@ -140,7 +141,7 @@ export default function TopicDetails() {
                 <div className="lg:col-span-2 space-y-6">
                     <Card>
                         <CardHeader>
-                            <CardTitle>Topic Information</CardTitle>
+                            <CardTitle>Archive Exam Information</CardTitle>
                             <CardDescription>Basic details about this topic</CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-4">
@@ -150,9 +151,9 @@ export default function TopicDetails() {
                                     <p className="text-lg font-semibold mt-1">{data.name}</p>
                                 </div>
                                 <div>
-                                    <p className="text-sm font-medium text-gray-500">Subtitle</p>
+                                    <p className="text-sm font-medium text-gray-500">Year</p>
                                     <p className="text-lg font-semibold mt-1 capitalize">
-                                        {data.subTitle || 'N/A'}
+                                        {data.year || 'N/A'}
                                     </p>
                                 </div>
                                 <div className='lg:col-span-2'>
@@ -164,9 +165,9 @@ export default function TopicDetails() {
                                 <div>
                                     <p className="text-sm font-medium text-gray-500">Subject</p>
                                     <div className="flex items-center gap-2 mt-1">
-                                        <p className="text-lg font-semibold">{data.subject.name}</p>
+                                        <p className="text-lg font-semibold">data.subject.nam</p>
                                         <Link
-                                            href={`/subjects/${data.subject.id}`}
+                                            href={`/subjects/`}
                                             className="text-blue-500 hover:text-blue-700 transition-colors"
                                             title="View Subject"
                                         >
@@ -177,9 +178,9 @@ export default function TopicDetails() {
                                 <div>
                                     <p className="text-sm font-medium text-gray-500">Lesson</p>
                                     <div className="flex items-center gap-2 mt-1">
-                                        <p className="text-lg font-semibold">{data.lesson.name}</p>
+                                        <p className="text-lg font-semibold">data.lesson.name</p>
                                         <Link
-                                            href={`/subjects/${data.lesson.id}`}
+                                            href={`/subjects/`}
                                             className="text-blue-500 hover:text-blue-700 transition-colors"
                                             title="View Lesson"
                                         >
@@ -222,66 +223,132 @@ export default function TopicDetails() {
 
                     <Card>
                         <CardHeader>
-                            <CardTitle>Media & Resources</CardTitle>
-                            <CardDescription>Associated learning materials</CardDescription>
+                            <CardTitle>MCQs</CardTitle>
+                            <CardDescription>Questions with options, hints, and explanations</CardDescription>
                         </CardHeader>
+
                         <CardContent>
-                            <div className="space-y-4">
-                                {/* Video URL */}
-                                <div className="flex items-start gap-3 p-4 border rounded-lg">
-                                    <div className={`p-3 rounded-lg `}>
-                                        <Video
-                                            className={`h-6 w-6 ${data.videoUrl ? 'text-red-500' : 'text-gray-400'}`}/>
-                                    </div>
-                                    <div className="flex-1">
-                                        <p className="font-medium">Video Content</p>
-                                        {data.videoUrl ? (
-                                            <div className="mt-2">
-                                                <Link
-                                                    href={`/subjects/${data.subjectId}`}
-                                                    target="_blank"
-                                                    className="text-sm"
-                                                >
-                                                    <Play className="h-3 w-3"/>
-                                                    Watch Video
-                                                    <ExternalLink className="h-3 w-3"/>
+                            {data && data?.questions && data?.questions?.length > 0 ? (
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    {data.questions.map((question: any, index: number) => (
+                                        <div key={question.id} className="p-4 border rounded-lg space-y-4">
+
+                                            <div className="flex justify-between gap-2">
+                                                <div>
+                                                    <p className="font-semibold text-base">
+                                                        {index + 1}. {question.name}
+                                                    </p>
+                                                </div>
+
+                                                <Link href={''}
+                                                      className='flex justify-between gap-2  text-blue-500 hover:text-blue-700 transition-colors font-semibold text-base'>
+                                                    Edit
+                                                    <Pencil className="w-4 h-4"/>
+
                                                 </Link>
                                             </div>
-                                        ) : (
-                                            <p className="text-sm text-gray-500 mt-1">No video available</p>
-                                        )}
-                                    </div>
-                                </div>
 
-                                {/* Resource URL */}
-                                <div className="flex items-start gap-3 p-4 border rounded-lg">
-                                    <div
-                                        className={`p-3 rounded-lg `}>
-                                        <Link2
-                                            className={`h-6 w-6 `}/>
-                                    </div>
-                                    <div className="flex-1">
-                                        <p className="font-medium">Learning Resources</p>
-                                        {data.resourceUrl ? (
-                                            <div className="mt-2">
-                                                <a
-                                                    href={data.resourceUrl}
-                                                    target="_blank"
-                                                    rel="noopener noreferrer"
-                                                    className="text-sm text-blue-500 hover:underline flex items-center gap-1"
+                                            {question.passage && (
+                                                <p className="text-sm text-muted-foreground my-2 p-2 rounded">
+                                                    {question.passage}
+                                                </p>
+                                            )}
+
+                                            {question.imageUrl && (
+                                                <div className="mt-2">
+                                                    <Image
+                                                        src={question.imageUrl}
+                                                        alt="Question"
+                                                        className="rounded-lg border max-h-48 object-contain"
+                                                    />
+                                                </div>
+                                            )}
+
+
+                                            <ul className="space-y-2">
+                                                {question.options.map((opt: any, i: number) => (
+                                                    <li
+                                                        key={opt.id}
+                                                        className={`p-2 border rounded-lg text-sm flex items-start gap-2 ${
+                                                            opt.isCorrect
+                                                                ? "border-green-50 text-green-700 dark:border-green-800 dark:text-green-400"
+                                                                : "hover:bg-gray-50 dark:hover:bg-gray-800"
+
+                                                        }`}
+                                                    >
+                  <span className="font-medium">
+                    {String.fromCharCode(65 + i)}.
+                  </span>
+                                                        <span>{opt.name}</span>
+                                                    </li>
+                                                ))}
+                                            </ul>
+
+                                            {/* Hint */}
+                                            {question.hint && (
+                                                <div
+                                                    className="text-sm text-yellow-800 bg-yellow-50 border border-yellow-200 p-2 rounded-lg dark:text-yellow-300 dark:bg-yellow-900/30 dark:border-yellow-800"
                                                 >
-                                                    View Resource
-                                                    <ExternalLink className="h-3 w-3"/>
-                                                </a>
-                                            </div>
-                                        ) : (
-                                            <p className="text-sm text-gray-500 mt-1">No resources available</p>
-                                        )}
-                                    </div>
+                                                    💡 Hint: {question.hint}
+                                                </div>
+
+                                            )}
+
+                                            {/* Explanation */}
+                                            {question.explanation && (
+                                                <div
+                                                    className="text-sm text-gray-800 bg-gray-50 border border-gray-200 p-2 rounded-lg dark:text-gray-200 dark:bg-gray-900/40 dark:border-gray-700"
+                                                >
+                                                    🧠 Explanation: {question.explanation}
+                                                </div>
+
+                                            )}
+
+                                            {/* Explanation Image */}
+                                            {question.explanationImageUrl && (
+                                                <div className="mt-2">
+                                                    <img
+                                                        src={question.explanationImageUrl}
+                                                        alt="Explanation"
+                                                        className="rounded-lg border max-h-40 object-contain"
+                                                    />
+                                                </div>
+                                            )}
+
+                                            {/* Explanation Resource or Video */}
+                                            {(question.explanationVideoUrl || question.explanationResourceUrl) && (
+                                                <div className="flex flex-wrap gap-3 mt-2">
+                                                    {question.explanationVideoUrl && (
+                                                        <a
+                                                            href={question.explanationVideoUrl}
+                                                            target="_blank"
+                                                            rel="noopener noreferrer"
+                                                            className="text-sm text-blue-600 underline flex items-center gap-1"
+                                                        >
+                                                            🎥 Watch Explanation Video
+                                                        </a>
+                                                    )}
+                                                    {question.explanationResourceUrl && (
+                                                        <a
+                                                            href={question.explanationResourceUrl}
+                                                            target="_blank"
+                                                            rel="noopener noreferrer"
+                                                            className="text-sm text-blue-600 underline flex items-center gap-1"
+                                                        >
+                                                            📄 View Resource
+                                                        </a>
+                                                    )}
+                                                </div>
+                                            )}
+                                        </div>
+                                    ))}
                                 </div>
-                            </div>
+                            ) : (
+                                <p className="text-sm text-muted-foreground">No MCQs available.</p>
+                            )}
                         </CardContent>
                     </Card>
+
 
                     <Card>
                         <CardHeader>
@@ -332,9 +399,9 @@ export default function TopicDetails() {
                             <div className="flex items-center justify-between p-3 rounded-lg">
                                 <div className="flex items-center gap-2">
                                     <BookOpen className="h-5 w-5 text-purple-500"/>
-                                    <span className="text-sm font-medium">Total Topics</span>
+                                    <span className="text-sm font-medium">Total Questions</span>
                                 </div>
-                                <span className="text-2xl font-bold text-purple-500">12</span>
+                                <span className="text-2xl font-bold text-purple-500">{data.questions.length}</span>
                             </div>
                             <div className="flex items-center justify-between p-3  rounded-lg">
                                 <div className="flex items-center gap-2">

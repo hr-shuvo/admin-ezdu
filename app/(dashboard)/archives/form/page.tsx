@@ -298,19 +298,32 @@ const ArchiveCreatePage = () => {
                     <CardContent>
                         <div className="space-y-4 text-sm text-muted-foreground">
                             <p>
-                                Use this form to update the academic topic. Fill in the topic name, select the
+                                Use this form to <strong>update or create an academic topic or exam</strong>. Fill in the topic name, select the
                                 appropriate segment and status, and optionally assign groups to the topic.
                             </p>
                             <p>
-                                Fields marked with * are required. Ensure that the topic name is unique and
-                                descriptive.
+                                Fields marked with * are required. Ensure that the topic or exam name is unique and descriptive.
                             </p>
                             <p>
-                                After updating the topic, you can manage its details and assignments from the classes
-                                dashboard.
+                                After creating or updating the exam, you can manage its details and assignments from the <strong>Classes Dashboard</strong>.
+                            </p>
+                            <hr className="my-3" />
+                            <p className="font-medium text-foreground">Next steps:</p>
+                            <ol className="list-decimal list-inside space-y-1">
+                                <li>Create an exam here with the desired title and details.</li>
+                                <li>Once saved, go to the <strong>Questions</strong> section to add questions to this exam.</li>
+                                <li>
+                                    While creating a question, select this exam from the dropdown to associate the question with it.
+                                </li>
+                            </ol>
+                            <p>
+                                You can directly <a href="/questions/form" className="text-primary underline hover:text-primary/80">
+                                create a question here
+                            </a> once the exam is ready.
                             </p>
                         </div>
                     </CardContent>
+
                 </Card>
             </div>
         </div>
