@@ -19,18 +19,18 @@ const getList = async (page: number, size: number, orderBy?: string, sortBy?: 'a
         params.append("withDeleted", withDeleted.toString());
     }
 
-    const response = await httpClient.get("/examarchives", {params: params});
+    const response = await httpClient.get("/archiveexams", {params: params});
 
     return response.data;
 }
 
 const save = async (model: any): Promise<any> => {
-    const response = await httpClient.post(`/examarchives/save`, model);
+    const response = await httpClient.post(`/archiveexams/save`, model);
     return response.data;
 }
 
 const get = async (id: number): Promise<any> => {
-    const response = await httpClient.get(`/examarchives/${id}`);
+    const response = await httpClient.get(`/archiveexams/${id}`);
     return response.data;
 }
 
@@ -41,17 +41,17 @@ const remove = async (id: number): Promise<any> => {
     //
     //     return null;
     // }
-    const response = await httpClient.delete(`/examarchives/delete/${id}`);
+    const response = await httpClient.delete(`/archiveexams/delete/${id}`);
     return response.data;
 }
 
 const permanentDelete = async (id: number): Promise<any> => {
-    const response = await httpClient.delete(`/examarchives/permanent-delete/${id}`);
+    const response = await httpClient.delete(`/archiveexams/permanent-delete/${id}`);
     return response.data;
 }
 
 const restore = async (id: number): Promise<any> => {
-    const response = await httpClient.patch(`/examarchives/restore/${id}`);
+    const response = await httpClient.patch(`/archiveexams/restore/${id}`);
     return response.data;
 }
 
