@@ -42,7 +42,8 @@ const ClassEditPage = () => {
                     const data = await classService.get(classId);
 
                     data.segment = data.segment ? Number(data.segment) : undefined;
-                    data.groups = data.groups.split(',').map((group: string) => group.trim()).filter(Boolean);
+                    if (data.groups)
+                        data.groups = data.groups.split(',').map((group: string) => group.trim()).filter(Boolean);
 
                     form.reset(data)
 
@@ -54,10 +55,9 @@ const ClassEditPage = () => {
                 setLoading(false);
             }
         }
-        
+
         loadData();
     }, [params.id]);
-
 
 
     const onSubmit = async (values: z.infer<typeof classSchema>) => {

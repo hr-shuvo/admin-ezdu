@@ -5,7 +5,7 @@ export const questionSchema = z.object({
     name: z
         .string()
         .min(1, {message: "Question text is required"})
-        .max(100, {message: "Question text must be less than 100 characters"}),
+        .max(250, {message: "Question text must be less than 250 characters"}),
     questionType: z.number({error: "Type is required"}).min(1, {message: "Type is required"}),
     passage: z.string().optional(),
 

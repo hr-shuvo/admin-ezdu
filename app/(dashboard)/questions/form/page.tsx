@@ -173,12 +173,12 @@ const QuestionCreatePage = () => {
                                         <div className="md:col-span-4">
                                             <FormField name="name" control={form.control} render={({field}) => (
                                                 <FormItem>
-                                                    <FormLabel>Class name *</FormLabel>
+                                                    <FormLabel>Title *</FormLabel>
                                                     <FormControl>
                                                         <Input
                                                             {...field}
                                                             type="text"
-                                                            placeholder="e.g., Mathematics 101"
+                                                            placeholder="e.g. 2+7 = ?"
                                                             disabled={isLoading}
                                                         />
                                                     </FormControl>
